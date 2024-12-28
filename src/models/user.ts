@@ -1,4 +1,3 @@
-
 import { InferSchemaType, model, Schema } from "mongoose";
 
 const User = new Schema({
