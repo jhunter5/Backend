@@ -6,6 +6,7 @@ const Tenant = new Schema({
         type: Number,
         required: [true, 'El número de cedula es obligatorio'],
         trim: true,
+        unique: true,
         min: [1111111, 'La cédula debe tener mínimo 7 dígitos'],
         max: [9999999999, 'La cédula debe tener máximo 10 dígitos'],
     },
@@ -39,12 +40,10 @@ const Tenant = new Schema({
             'Por favor, ingrese un correo electrónico válido',
           ],
     },
-    // calificación_promedio - calificación de 0 a 5, sujeto a cambios
-    averageRating: {
+    age: {
         type: Number,
-        default: 0,
-        min: [0, 'La calificación mínima debe ser 0'],
-        max: [5, 'La calificación máxima debe ser 5'],
+        required: [true, 'La edad es obligatoria'],
+        min: [18, 'La edad debe ser 18'],
     },
     // contratos_previos
     previousContracts: {
@@ -59,23 +58,28 @@ const Tenant = new Schema({
         min: [0, 'La clasificación mínima debe ser 0'],
         max: [5, 'La clasificación máxima debe ser 5'],
     },
-    // puntualidad_pagos - calificación de 0 a 5, sujeto a cambios
-    paymentBehavior: {
-        type: Number,
-        default: 0,
-        min: [0, 'La puntualidad de págos mínima debe ser 0'],
-        max: [5, 'La puntualidad de págos máxima debe ser 5'],
-    },
+    // EsFamilia? Verificar con quien creo la DB
     // antiguedad_plataforma - en días, aunque, sujeto a cambios
     tenure: {
         type: Number,
         default: 0,
         min: [0, 'Los días de antiguedad mínima deben ser 0'],
     },
+    // tipo_identificacion
+    idType: {
+        type: String,
+        required: [true, 'El tipo de documento es obligatorio'],
+        minlength: [2, 'El tipo de documento debe tener mínimo 2 caracteres (CC, TI, PP, etc)'],
+        maxlength: [4, 'El tipo de documento debe tener máximo 4 caracteres (C.C., T.I., P.P., etc)'],
+    },
     createdAt: {
         type: Date,
         default: Date.now,
-      },
+    },
+    updatedAt: {
+        type: Date,
+        default: Date.now,
+    },
 });
 type TenantType = InferSchemaType<typeof Tenant>
 // Crear el modelo a partir del esquema

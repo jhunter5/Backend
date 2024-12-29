@@ -5,6 +5,7 @@ const Landlord = new Schema({
     id: {
         type: Number,
         required: [true, 'El número de cedula es obligatorio'],
+        unique: true,
         trim: true,
         min: [1111111, 'La cédula debe tener mínimo 7 dígitos'],
         max: [9999999999, 'La cédula debe tener máximo 10 dígitos'],
@@ -48,7 +49,11 @@ const Landlord = new Schema({
     createdAt: {
         type: Date,
         default: Date.now,
-      },
+    },
+    updatedAt: {
+        type: Date,
+        default: Date.now,
+    },
 });
 type LandlordType = InferSchemaType<typeof Landlord>
 // Crear el modelo a partir del esquema

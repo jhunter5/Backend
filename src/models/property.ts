@@ -46,12 +46,6 @@ const Property = new Schema({
         required: [true, 'La cantidad de metros cuadrados es obligatoria'],
         min: [0, 'El número de metros cuadrados no puede ser negativo'],
     },
-    // precio_sugerido
-    suggestedPrice: {
-        type: Number,
-        required: [true, 'El precio sugerido es obligatorio'],
-        min: [0, 'El precio sugerido no puede ser negativo'],
-    },
     // estrato - la palabra más parecida sería tier (sujeto a cambios)
     tier: {
         type: Number,
@@ -85,7 +79,11 @@ const Property = new Schema({
     createdAt: {
         type: Date,
         default: Date.now,
-      },
+    },
+    updatedAt: {
+        type: Date,
+        default: Date.now,
+    },
 });
 type PropertyType = InferSchemaType<typeof Property>
 // Crear el modelo a partir del esquema
