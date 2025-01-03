@@ -1,0 +1,38 @@
+import { InferSchemaType, model, Schema} from 'mongoose';
+
+// reseña
+const Review = new Schema({
+    // comentario
+    comment: {
+        type: String,
+        maxlength: [1000, 'La descripción máxima debe tener máximo 1000 caracteres'],
+    },
+    // calificación
+    rating: {
+        type: Number,
+        required: [true, 'La calificación es obligatoria'],
+        default: 0,
+        min: [0, 'La calificación mínima de la reseña es 0'],
+        max: [10, 'La calificación máxima de la reseña es 10'],
+    },
+    // fecha
+    date: {
+        type: Date,
+        required: [true, 'La fecha de la reseña es obligatoria'],
+        default: Date.now,
+    },
+    createdAt: {
+        type: Date,
+        default: Date.now,
+    },
+    updatedAt: {
+        type: Date,
+        default: Date.now,
+    },
+});
+type ReviewType = InferSchemaType<typeof Review>
+// Crear el modelo a partir del esquema
+export const ReviewModel = model<ReviewType>(
+  "review",
+  Review
+);

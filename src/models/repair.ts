@@ -1,24 +1,26 @@
 import { InferSchemaType, model, Schema} from 'mongoose';
 
+// reparación
 const Repair = new Schema({
     // descripción - longitud de la descripción?
     description: {
         type: String,
-        required: [true, 'La dirección es obligatoria'],        
-        // minlength: [3, 'El nombre debe tener mínimo 3 caracteres'],
-        // maxlength: [50, 'El nombre debe tener máximo 50 caracteres'],
+        required: [true, 'La dirección es obligatoria'],
+        maxlength: [1000, 'La descripción debe tener máximo 1000 caracteres'],
     },
     // prioridad - códigos de la prioridad?
     priority: {
-        type: String,
-        required: [true, 'La dirección es obligatoria'],        
-        // minlength: [3, 'El nombre debe tener mínimo 3 caracteres'],
-        // maxlength: [50, 'El nombre debe tener máximo 50 caracteres'],
+        type: Number,
+        required: [true, 'La prioridad de la reparación es obligatoria'],        
+        default: 0,
+        min: [0, 'El código de prioridad debe ser un número positivo'],
     },
     // estado - definir cuáles son los códigos de estado para determinar la longitud
     status: {
-        type: String,
-        required: [true, 'El estado de la reparación es obligatorio'],       
+        type: Number,
+        required: [true, 'El estado de la reparación es obligatorio'],
+        default: 0,
+        min: [0, 'El código de estado debe ser un número positivo'],   
     },
      // fecha_reporte
      reportDate: {
@@ -32,8 +34,7 @@ const Repair = new Schema({
     // costo
     cost: {
         type: Number,
-        required: [true, 'El costo de la reparación es obligatorio'],
-        min: [0, 'El costo de la reparación no puede ser negativo'],
+        min: [0, 'El costo de la reparación debe ser un número positivo'],
     },
     createdAt: {
         type: Date,

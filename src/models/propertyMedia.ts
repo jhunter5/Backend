@@ -1,20 +1,26 @@
 import { InferSchemaType, model, Schema} from 'mongoose';
 
-const ContractMedia = new Schema({
-    // tipo_documento - definir cuáles son los códigos de documento para determinar la longitud
-    documentType: {
+// propiedad_media
+const PropertyMedia = new Schema({
+    // tipo_media
+    mediaType: {
         type: String,
         required: [true, 'El tipo de documento del contrato es obligatorio'],       
     },
-    // url_documento
-    documentUrl: {
+    // url_media
+    mediaUrl: {
         type: String,
         required: [true, 'El estado del contrato es obligatorio'],       
     },
+    // descripción
+    description: {
+        type: String,
+        maxlength: [100, 'La descripción máxima debe tener máximo 100 caracteres'],
+    },    
     // fecha_subida
     uploadDate: {
         type: Date,
-        required: [true, 'La fecha de inicio es obligatoria'],
+        required: [true, 'La fecha de subida es obligatoria'],
     },
     createdAt: {
         type: Date,
@@ -25,9 +31,9 @@ const ContractMedia = new Schema({
         default: Date.now,
     },
 });
-type ContractMediaType = InferSchemaType<typeof ContractMedia>
+type PropertyMediaType = InferSchemaType<typeof PropertyMedia>
 // Crear el modelo a partir del esquema
-export const ContractMediaModel = model<ContractMediaType>(
-  "contractmedia",
-  ContractMedia
+export const PropertyMediaModel = model<PropertyMediaType>(
+  "propertymedia",
+  PropertyMedia
 );

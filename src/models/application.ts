@@ -9,13 +9,17 @@ const Application = new Schema({
     },
     // estado - definir cuáles son los códigos de estado para determinar la longitud
     status: {
-        type: String,
-        required: [true, 'El estado de la aplicación es obligatoria'],       
+        type: Number,
+        required: [true, 'El estado de la aplicación es obligatoria'],
+        default: 0, 
+        min: [0, 'El código de estado debe ser un número positivo'],      
     },
-    // calificación - preguntar cuál es la escala de la calificación
+    // calificación
     score: {
         type: Number,
-        min: [0, 'La calificación no puede ser negativa'],
+        default: 0,
+        min: [0, 'La calificación mínima debe ser 0'],
+        max: [10, 'La calificación máxima debe ser 10'],
     },
     createdAt: {
         type: Date,

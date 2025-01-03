@@ -10,6 +10,13 @@ const Tenant = new Schema({
         min: [1111111, 'La cédula debe tener mínimo 7 dígitos'],
         max: [9999999999, 'La cédula debe tener máximo 10 dígitos'],
     },
+    // tipo_identificacion
+    idType: {
+        type: String,
+        required: [true, 'El tipo de documento es obligatorio'],
+        minlength: [2, 'El tipo de documento debe tener mínimo 2 caracteres (CC, TI, PP, etc)'],
+        maxlength: [4, 'El tipo de documento debe tener máximo 4 caracteres (C.C., T.I., P.P., etc)'],
+    },
     firstName: {
         type: String,
         required: [true, 'El nombre es obligatorio'],        
@@ -43,34 +50,76 @@ const Tenant = new Schema({
     age: {
         type: Number,
         required: [true, 'La edad es obligatoria'],
-        min: [18, 'La edad debe ser 18'],
+        min: [18, 'La edad mínima debe ser 18'],
+    },
+    // genero
+    gender: {
+        type: String,
+        required: [true, 'El genero es obligatorio'],
+        match: [
+            /^(Masculino|Femenino|No Binario)$/,
+            'Por favor, ingrese un correo electrónico válido',
+          ],
+    },
+    // estado_civil
+    maritalStatus: {
+        type: String,
+        required: [true, 'El estado civil es obligatorio'],
+        match: [
+            /^(Soltero|Casado|Viudo|Divorciado|Unión Libre)$/,
+            'Por favor, ingrese un correo electrónico válido',
+          ],
+    },
+    // salario_actual
+    salary: {
+        type: Number,
+        default: 0,
+        min: [0, 'El salario del inquilino debe ser un número positivo'],
+    },
+    // tipo_contrato
+    contractType: {
+        type: String,
+        minlength: [3, 'El tipo de contrato debe tener mínimo 3 caracteres'],
+        maxlength: [50, 'El tipo de contrato debe tener máximo 50 caracteres'],  
+    },
+    // industria
+    industry: {
+        type: String,
+        minlength: [3, 'La industria debe tener mínimo 3 caracteres'],
+        maxlength: [50, 'La industria debe tener máximo 50 caracteres'],
+    },
+    // calificacion_promedio
+    avgRating: {
+        type: Number,
+        default: 0,
+        min: [0, 'La calificación mínima del inquilino es 0'],
+        max: [10, 'La calificación máxima del inquilino es 10'],
     },
     // contratos_previos
     previousContracts: {
         type: Number,
         default: 0,
-        min: [0, 'El número de contratos no puede ser negativo'],
+        min: [0, 'El número de contratos debe ser un número positivo'],
     },
-    // clasificación - calificación de 0 a 5, sujeto a cambios
+    // duracion_promedio_contrato - meses
+    avgContractDuration: {
+        type: Number,
+        default: 0,
+        min: [0, 'La duración promedio del contrato debe ser un número positivo'],
+    },
+    // clasificación - preguntar por diferencia a Juan con la calificacion_promedio
     rating: {
         type: Number,
         default: 0,
         min: [0, 'La clasificación mínima debe ser 0'],
-        max: [5, 'La clasificación máxima debe ser 5'],
+        max: [10, 'La clasificación máxima debe ser 10'],
     },
-    // EsFamilia? Verificar con quien creo la DB
+    // EsFamilia - preguntar a Juan
     // antiguedad_plataforma - en días, aunque, sujeto a cambios
     tenure: {
         type: Number,
         default: 0,
         min: [0, 'Los días de antiguedad mínima deben ser 0'],
-    },
-    // tipo_identificacion
-    idType: {
-        type: String,
-        required: [true, 'El tipo de documento es obligatorio'],
-        minlength: [2, 'El tipo de documento debe tener mínimo 2 caracteres (CC, TI, PP, etc)'],
-        maxlength: [4, 'El tipo de documento debe tener máximo 4 caracteres (C.C., T.I., P.P., etc)'],
     },
     createdAt: {
         type: Date,

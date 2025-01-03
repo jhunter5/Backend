@@ -4,21 +4,22 @@ const Notification = new Schema({
     // mensaje - longitud del mensaje?
     message: {
         type: String,
-        required: [true, 'La dirección es obligatoria'],        
-        // minlength: [3, 'El nombre debe tener mínimo 3 caracteres'],
-        // maxlength: [50, 'El nombre debe tener máximo 50 caracteres'],
+        required: [true, 'El mensaje es obligatorio'],
+        maxlength: [1000, 'La descripción máxima debe tener máximo 1000 caracteres'],
     },
     // prioridad - códigos de la prioridad?
     priority: {
-        type: String,
-        required: [true, 'La dirección es obligatoria'],        
-        // minlength: [3, 'El nombre debe tener mínimo 3 caracteres'],
-        // maxlength: [50, 'El nombre debe tener máximo 50 caracteres'],
+        type: Number,
+        required: [true, 'La prioridad es obligatoria'],
+        default: 0,
+        min: [0, 'El código de prioridad debe ser un número positivo'],
     },
     // estado - definir cuáles son los códigos de estado para determinar la longitud
     status: {
-        type: String,
-        required: [true, 'El estado de la reparación es obligatorio'],       
+        type: Number,
+        required: [true, 'El estado de la notificación es obligatorio'],       
+        default: 0,
+        min: [0, 'El código de estado debe ser un número positivo'],
     },
      // fecha_envio
      sentDate: {

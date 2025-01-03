@@ -15,12 +15,18 @@ const Contract = new Schema({
     monthlyRent: {
         type: Number,
         required: [true, 'El monto mensual es obligatorio'],
-        min: [0, 'El monto mensual no puede ser negativo'],
+        min: [0, 'El monto mensual debe ser un número positivo'],
     },
     // estado - definir cuáles son los códigos de estado para determinar la longitud
     status: {
         type: String,
         required: [true, 'El estado del contrato es obligatorio'],       
+    },
+    // duracion (months)
+    duration: {
+        type: Number,
+        required: [true, 'La duración del contrato es obligatoria'],
+        min: [0, 'La duración del contrato debe ser un número positivo'],
     },
     createdAt: {
         type: Date,

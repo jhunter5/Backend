@@ -40,12 +40,20 @@ const Landlord = new Schema({
             'Por favor, ingrese un correo electrónico válido',
           ],
     },
-    // numero de propiedades
+    // numero_propiedades
     numberOfProperties: {
         type: Number,
         default: 0,
         min: [0, 'El número de propiedades no puede ser negativo'],
     },
+    // calificacion_promedio
+    avgRating: {
+        type: Number,
+        default: 0,
+        min: [0, 'La calificación mínima del arrendatario es 0'],
+        max: [10, 'La calificación máxima del arrendatario es 10'],
+    },
+    // porcentaje_cumplimento - preguntar a Juan
     createdAt: {
         type: Date,
         default: Date.now,

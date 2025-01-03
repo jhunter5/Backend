@@ -1,12 +1,11 @@
 import { InferSchemaType, model, Schema} from 'mongoose';
 
 const Property = new Schema({
-    // dirección - longitud de direccion?
+    // dirección
     address: {
         type: String,
         required: [true, 'La dirección es obligatoria'],        
-        // minlength: [3, 'El nombre debe tener mínimo 3 caracteres'],
-        // maxlength: [50, 'El nombre debe tener máximo 50 caracteres'],
+        maxlength: [200, 'La dirección debe tener máximo 200 caracteres'],
     },
     // municipio
     city: {
@@ -33,18 +32,19 @@ const Property = new Schema({
     rooms: {
         type: Number,
         required: [true, 'El número de habitaciones es obligatorio'],
-        min: [0, 'El número de habitaciones no puede ser negativo'],
+        min: [0, 'El número de habitaciones debe ser un número positivo'],
     },
     // parqueadero
     parking: {
-        type: Boolean,
-        required: [true, 'El parquadero es obligatorio'],
+        type: Number,
+        required: [true, 'El número de parqueaderos es obligatorio'],
+        min: [0, 'El número de parqueaderos debe ser un número positivo'],
     },
     // metros_cuadrados
     squareMeters: {
         type: Number,
         required: [true, 'La cantidad de metros cuadrados es obligatoria'],
-        min: [0, 'El número de metros cuadrados no puede ser negativo'],
+        min: [0, 'El número de metros cuadrados debe ser un número positivo'],
     },
     // estrato - la palabra más parecida sería tier (sujeto a cambios)
     tier: {
@@ -57,19 +57,19 @@ const Property = new Schema({
     bathrooms: {
         type: Number,
         required: [true, 'El número de baños es obligatorio'],
-        min: [0, 'El número mínimo de baños debe ser 0'],
+        min: [0, 'El número de baños debe ser un número positivo'],
     },
     // antiguedad - por propositos de simplicidad el nombre más adecuado sería age
     age: {
         type: Number,
         required: [true, 'El número de baños es obligatorio'],
-        min: [0, 'El número mínimo de baños debe ser 0'],
+        min: [0, 'La edad del inmueble debe ser un número positivo'],
     },
     // numero_pisos
     floors: {
         type: Number,
         required: [true, 'El número de baños es obligatorio'],
-        min: [0, 'El número mínimo de baños debe ser 0'],
+        min: [0, 'El número de pisos debe ser un número positivo'],
     },
     // descripción
     description: {

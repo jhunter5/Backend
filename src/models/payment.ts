@@ -1,11 +1,12 @@
 import { InferSchemaType, model, Schema} from 'mongoose';
 
+// pago
 const Payment = new Schema({
     // monto
     amount: {
         type: Number,
-        required: [true, 'El monto mensual es obligatorio'],
-        min: [0, 'El monto mensual no puede ser negativo'],
+        required: [true, 'El monto del pago es obligatorio'],
+        min: [0, 'El monto del pago debe ser un número positivo'],
     },
     // fecha_pago
     paymentDate: {
@@ -14,18 +15,21 @@ const Payment = new Schema({
     },
     // estado - definir cuáles son los códigos de estado para determinar la longitud
     status: {
-        type: String,
-        required: [true, 'El estado del pago es obligatorio'],       
+        type: Number,
+        required: [true, 'El estado del pago es obligatorio'],
+        default: 0,
+        min: [0, 'El estado del pago debe ser un número positivo'],       
     },
     // metodo_pago - definir cuáles son los códigos de estado para determinar la longitud
     paymentMethod: {
-        type: String,
-        required: [true, 'El método de pago es obligatorio'],       
+        type: Number,
+        required: [true, 'El método de pago es obligatorio'],
+        default: 0,
+        min: [0, 'El estado del pago debe ser un número positivo'],         
     },
     // comprobante
     receipt: {
-        type: String,
-        required: [true, 'El comprobante de pago es obligatorio'],       
+        type: String,      
     },
     createdAt: {
         type: Date,
