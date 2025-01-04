@@ -1,5 +1,5 @@
 import { RequestHandler } from "express";
-import { UserModel } from "../models/user";
+import { UserModel } from "../../models/users/user";
 import createHttpError from "http-errors";
 
 export const createUser: RequestHandler = async (req, res, next) => {

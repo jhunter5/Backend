@@ -18,7 +18,7 @@ const options = {
             ]
         }
     },
-    apis: ['./src/routes/*.ts']
+    apis: ['./src/routes/**/*.ts'], // Busca en todas las subcarpetas
 };
 
 const specs = swaggerJsdoc(options);

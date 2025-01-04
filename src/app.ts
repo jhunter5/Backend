@@ -1,5 +1,5 @@
 import express, { NextFunction, Request, Response } from "express";
-import userRoutes from "./routes/user"
+import router from "./routes/index"
 import cors from "cors"
 import morgan from "morgan";
 import createHttpError, { isHttpError } from "http-errors";
@@ -20,7 +20,7 @@ app.use(morgan("dev"));
 
 
 
-app.use("/api", userRoutes);
+app.use("/api", router);
 app.use("/api-docs", swaggerUI.serve, swaggerUI.setup(specs));
 app.use((req,res,next)=>{
   next(createHttpError(404,"Endpoint not found"))

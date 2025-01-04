@@ -1,12 +1,35 @@
 import express, { Request, Response } from "express";
-import { createUser, deleteUser, showUser, showUsers, updateUser } from "../controllers/user";
+import {
+  createUser,
+  deleteUser,
+  showUser,
+  showUsers,
+  updateUser,
+} from "../../controllers/users/user";
 
-const router = express.Router();
+const UserRouter = express.Router();
+
+/**
+ * @swagger
+ * tags:
+ *   - name: Users
+ *     description: Operaciones relacionadas con usuarios
+ */
+
+
+UserRouter.post("/", createUser);
+UserRouter.get("/", showUsers);
+UserRouter.patch("/:id", updateUser);
+UserRouter.delete("/:id", deleteUser);
+UserRouter.get("/:id", showUser);
+
 
 /**
  * @swagger
  * /api/user:
  *   get:
+ *     tags:
+ *       - Users
  *     summary: Obtener todos los usuarios
  *     responses:
  *       '200':
@@ -20,6 +43,8 @@ const router = express.Router();
  *       '404':
  *         description: No se encontraron usuarios
  *   post:
+ *     tags:
+ *       - Users
  *     summary: Crear un nuevo usuario
  *     requestBody:
  *       required: true
@@ -37,13 +62,13 @@ const router = express.Router();
  *       '409':
  *         description: Teléfono ya registrado
  */
-router.post("/user", createUser);
-router.get("/user", showUsers);
 
 /**
  * @swagger
  * /api/user/{id}:
  *   get:
+ *     tags:
+ *       - Users
  *     summary: Obtener un usuario por su ID
  *     parameters:
  *       - in: path
@@ -61,6 +86,8 @@ router.get("/user", showUsers);
  *       '404':
  *         description: Usuario no encontrado
  *   patch:
+ *     tags:
+ *       - Users
  *     summary: Actualizar un usuario por su ID
  *     parameters:
  *       - in: path
@@ -84,6 +111,8 @@ router.get("/user", showUsers);
  *       '404':
  *         description: Usuario no encontrado
  *   delete:
+ *     tags:
+ *       - Users
  *     summary: Eliminar un usuario por su ID
  *     parameters:
  *       - in: path
@@ -97,11 +126,8 @@ router.get("/user", showUsers);
  *       '404':
  *         description: Usuario no encontrado
  */
-router.patch("/user/:id", updateUser);
-router.delete("/user/:id", deleteUser);
-router.get("/user/:id", showUser);
 
-export default router;
+export default UserRouter;
 
 /**
  * @swagger
