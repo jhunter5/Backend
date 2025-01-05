@@ -4,6 +4,7 @@ import {
   deleteProperty,
   showProperty,
   showProperties,
+  showPropertiesByUser,
   updateProperty,
 } from "../../controllers/properties/property";
 
@@ -57,6 +58,33 @@ PropertyRouter.get("/", showProperties);
 
 /**
  * @swagger
+ * /api/property/user/{userId}:
+ *   get:
+ *     tags:
+ *       - Properties
+ *     summary: Obtener todas las propiedades de un usuario
+ *     parameters:
+ *       - in: path
+ *         name: userId
+ *         required: true
+ *         schema:
+ *           type: string
+ *     responses:
+ *       '200':
+ *         description: Lista de propiedades del usuario
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 $ref: '#/components/schemas/PropertyWithMedia'
+ *       '404':
+ *         description: No se encontraron propiedades para el usuario
+ */
+PropertyRouter.get("/user/:userId", showPropertiesByUser);
+
+/**
+ * @swagger
  * /api/property/{id}:
  *   get:
  *     tags:
@@ -74,7 +102,7 @@ PropertyRouter.get("/", showProperties);
  *         content:
  *           application/json:
  *             schema:
- *               $ref: '#/components/schemas/Property'
+ *               $ref: '#/components/schemas/PropertyWithMediaAndContract'
  *       '404':
  *         description: Propiedad no encontrada
  *   patch:
@@ -159,43 +187,49 @@ export default PropertyRouter;
  *         updatedAt:
  *           type: string
  *           format: date-time
- *     PropertyInput:
- *       type: object
- *       properties:
- *         address:
- *           type: string
- *         city:
- *           type: string
- *         state:
- *           type: string
- *         type:
- *           type: string
- *         rooms:
- *           type: integer
- *         parking:
- *           type: integer
- *         squareMeters:
- *           type: number
- *         tier:
- *           type: integer
- *         bathrooms:
- *           type: integer
- *         age:
- *           type: integer
- *         floors:
- *           type: integer
- *         description:
- *           type: string
- *       required:
- *         - address
- *         - city
- *         - state
- *         - type
- *         - rooms
- *         - parking
- *         - squareMeters
- *         - tier
- *         - bathrooms
- *         - age
- *         - floors
+ *     PropertyWithMedia:
+ *       allOf:
+ *         - $ref: '#/components/schemas/Property'
+ *         - type: object
+ *           properties:
+ *             media:
+ *               type: array
+ *               items:
+ *                 type: object
+ *                 properties:
+ *                   mediaType:
+ *                     type: string
+ *                   mediaUrl:
+ *                     type: string
+ *                   description:
+ *                     type: string
+ *                   uploadDate:
+ *                     type: string
+ *                     format: date-time
+ *     PropertyWithMediaAndContract:
+ *       allOf:
+ *         - $ref: '#/components/schemas/PropertyWithMedia'
+ *         - type: object
+ *           properties:
+ *             contract:
+ *               type: object
+ *               properties:
+ *                 tenant:
+ *                   type: object
+ *                   properties:
+ *                     name:
+ *                       type: string
+ *                     email:
+ *                       type: string
+ *                 startDate:
+ *                   type: string
+ *                   format: date-time
+ *                 endDate:
+ *                   type: string
+ *                   format: date-time
+ *                 monthlyRent:
+ *                   type: number
+ *                 status:
+ *                   type: string
+ *       
 */

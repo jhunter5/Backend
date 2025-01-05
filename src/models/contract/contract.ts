@@ -2,7 +2,7 @@ import { InferSchemaType, model, Schema} from 'mongoose';
 
 const Contract = new Schema({
     // propiedad_id - FK
-    property: {
+    propertyId: {
         type: Schema.Types.ObjectId,
         ref: 'property',
         required: [true, 'El id de la propiedad es obligatorio'],
