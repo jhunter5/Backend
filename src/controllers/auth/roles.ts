@@ -12,8 +12,8 @@ const getAuth0ManagementToken = async (): Promise<string> => {
         },
         body: new URLSearchParams({
           grant_type: "client_credentials",
-          client_id: env.AUTH_CLIENT,
-          client_secret: env.AUTH_SECRET,
+          client_id: env.AUTH_CLIENT_ID,
+          client_secret: env.AUTH_SECRET_ID,
           audience: "https://dev-p3hv1ufn7l6q5x5j.us.auth0.com/api/v2/",
         }),
       });

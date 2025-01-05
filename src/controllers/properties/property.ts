@@ -150,7 +150,7 @@ export const showPropertiesByUser: RequestHandler = async (req, res, next) => {
 
   try {
     // Buscar propiedades asociadas al usuario
-    const properties = await PropertyModel.find({ userId }).exec();
+    const properties = await PropertyModel.find({ landlord:"677b06ae4d1beaef236bb640" }).exec();
     if (!properties || properties.length === 0) {
       throw createHttpError(404, "No properties found");
     }
@@ -159,7 +159,11 @@ export const showPropertiesByUser: RequestHandler = async (req, res, next) => {
     const propertiesWithMedia = await Promise.all(
       properties.map(async (property) => {
         const media = await PropertyMediaModel.find({ propertyId: property._id }).exec();
-        return { ...property.toObject(), media };
+        const contract = await ContractModel.findOne({ propertyId: property._id })
+        .populate("tenant", "name email") // Poblar datos del inquilino si es necesario
+        .exec();
+  
+        return { ...property.toObject(), media, contract };
       })
     );
 

@@ -104,6 +104,11 @@ const Tenant = new Schema({
         default: 0,
         min: [0, 'El número de contratos debe ser un número positivo'],
     },
+    ConctractsPer: {
+        type: Number,
+        default: 0,
+        min: [0, 'El número de contratos debe ser un número positivo'],
+    },
     // duracion_promedio_contrato - meses
     avgContractDuration: {
         type: Number,

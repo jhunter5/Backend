@@ -1,11 +1,11 @@
-import { ObjectCannedACL, PutObjectCommand, S3Client } from "@aws-sdk/client-s3";
+import { PutObjectCommand, S3Client } from "@aws-sdk/client-s3";
 import fs from "fs";
 import env from "./validateEnv";
 
 
-const region = env.AWS_BUCKET_REGION;
-const accessKeyId = env.AWS_PUBLIC_KEY;
-const secretAccessKey = env.AWS_SECRET_KEY;
+const region = env.AWS_BUCKET_REGION_ID;
+const accessKeyId = env.AWS_PUBLIC_KEY_ID;
+const secretAccessKey = env.AWS_SECRET_KEY_ID;
 
 // Verifica que las variables no sean undefined
 if (!region || !accessKeyId || !secretAccessKey) {
