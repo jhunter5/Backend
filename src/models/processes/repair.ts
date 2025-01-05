@@ -2,7 +2,13 @@ import { InferSchemaType, model, Schema} from 'mongoose';
 
 // reparación
 const Repair = new Schema({
-    // descripción - longitud de la descripción?
+    // propiedad_id - FK
+    property: {
+        type: Schema.Types.ObjectId,
+        ref: 'property',
+        required: [true, 'El id de la propiedad es obligatorio'],
+    },
+    // descripción
     description: {
         type: String,
         required: [true, 'La dirección es obligatoria'],

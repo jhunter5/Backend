@@ -1,6 +1,12 @@
 import { InferSchemaType, model, Schema} from 'mongoose';
 
 const Property = new Schema({
+    // arrendatario_id - FK
+    landlord: {
+        type: Schema.Types.ObjectId,
+        ref: 'landlord',
+        required: [true, 'El id del arrendatario es obligatorio'],
+    },
     // dirección
     address: {
         type: String,

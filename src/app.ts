@@ -6,20 +6,24 @@ import createHttpError, { isHttpError } from "http-errors";
 import "dotenv/config";
 import swaggerUI from "swagger-ui-express";
 import specs from "../swagger/swagger";
+import fileUpload from "express-fileupload";
+import path from "path";
 
 
 const app = express();
 
 app.use(express.json());
 app.use(
-  cors()
-);
+  cors());
 
+app.use(fileUpload({useTempFiles:true, tempFileDir: "./uploads/"}));
 
 app.use(morgan("dev"));
 
 
-
+app.get("/", (req, res) => {
+  res.sendFile(path.join(__dirname, "index.html"));
+});
 app.use("/api", router);
 app.use("/api-docs", swaggerUI.serve, swaggerUI.setup(specs));
 app.use((req,res,next)=>{

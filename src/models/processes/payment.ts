@@ -2,6 +2,18 @@ import { InferSchemaType, model, Schema} from 'mongoose';
 
 // pago
 const Payment = new Schema({
+    // contrato_id - FK
+    contract: {
+        type: Schema.Types.ObjectId,
+        ref: 'contract',
+        required: [true, 'El id del contrato es obligatorio'],
+    },
+    // inquilino_id - FK
+    tenant: {
+        type: Schema.Types.ObjectId,
+        ref: 'tenant',
+        required: [true, 'El id del inquilino es obligatorio'],
+    },
     // monto
     amount: {
         type: Number,

@@ -2,6 +2,18 @@ import { InferSchemaType, model, Schema} from 'mongoose';
 
 // reseña
 const Review = new Schema({
+    // propietario_id - FK
+    landlord: {
+        type: Schema.Types.ObjectId,
+        ref: 'landlord',
+        required: [true, 'El id del arrendatario es obligatorio'],
+    },
+    // inquilino_id - FK
+    tenant: {
+        type: Schema.Types.ObjectId,
+        ref: 'tenant',
+        required: [true, 'El id del inquilino es obligatorio'],
+    },
     // comentario
     comment: {
         type: String,

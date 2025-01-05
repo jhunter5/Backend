@@ -1,17 +1,33 @@
 import { RequestHandler } from "express";
 import { TenantModel } from "../../models/users/tenant";
 import createHttpError from "http-errors";
+import { uploadFileS3 } from "../../utils/S3";
 
 export const createTenant: RequestHandler = async (req, res, next) => {
   try {
     const tenantData = req.body;
+    const avatarFile = req.files?.file; // La imagen enviada en el campo `file`
 
+    // Verificar si el tenant ya existe
     const existingTenant = await TenantModel.findOne({ id: tenantData.id }).exec();
     if (existingTenant) {
       throw createHttpError(409, "ID Already Taken");
     }
 
-    const newTenant = await TenantModel.create(tenantData);
+    // Subir la imagen del avatar a S3
+    let avatarUrl = null;
+    if (avatarFile) {
+      avatarUrl = await uploadFileS3(avatarFile); // Subir archivo y obtener URL
+    } else {
+      avatarUrl = ""; // Avatar predeterminado
+    }
+
+    // Crear el nuevo tenant
+    const newTenant = await TenantModel.create({
+      ...tenantData,
+      avatar: avatarUrl, // Asignar el enlace del avatar
+    });
+
     res.status(201).json(newTenant);
   } catch (error) {
     next(error);

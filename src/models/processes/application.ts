@@ -2,6 +2,18 @@ import { InferSchemaType, model, Schema} from 'mongoose';
 
 // postulación
 const Application = new Schema({
+    // propiedad_id - FK
+    property: {
+        type: Schema.Types.ObjectId,
+        ref: 'property',
+        required: [true, 'El id de la propiedad es obligatorio'],
+    },
+    // inquilino_id - FK
+    tenant: {
+        type: Schema.Types.ObjectId,
+        ref: 'tenant',
+        required: [true, 'El id del inquilino es obligatorio'],
+    },
     // fecha_postulación
     applicationDate: {
         type: Date,

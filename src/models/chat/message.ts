@@ -2,6 +2,12 @@ import { InferSchemaType, model, Schema} from 'mongoose';
 
 // soporte_contrato
 const Message = new Schema({
+    // conversacion_id - FK
+    conversation: {
+        type: Schema.Types.ObjectId,
+        ref: 'conversation',
+        required: [true, 'El id de la conversación es obligatorio'],
+    },
     // contenido
     content: {
         type: String,

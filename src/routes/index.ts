@@ -8,6 +8,7 @@ import ApplicationRouter from "./processes/application";
 import PaymentRouter from "./processes/payment";
 import RepairRouter from "./processes/repair";
 import ReviewRouter from "./processes/review";
+import AuthRouter from "./auth/auth";
 
 
 const router = express.Router();
@@ -20,5 +21,6 @@ router.use("/application", ApplicationRouter);
 router.use("/payment", PaymentRouter);
 router.use("/repair", RepairRouter);
 router.use("/review", ReviewRouter);
+router.use("/auth", AuthRouter);
 
 export default router;

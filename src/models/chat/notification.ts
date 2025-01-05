@@ -1,6 +1,18 @@
 import { InferSchemaType, model, Schema} from 'mongoose';
 
 const Notification = new Schema({
+    // inquilino_id - FK
+    tenant: {
+        type: Schema.Types.ObjectId,
+        ref: 'tenant',
+        required: [true, 'El id del inquilino es obligatorio'],
+    },
+    // propietario_id - FK
+    landlord: {
+        type: Schema.Types.ObjectId,
+        ref: 'landlord',
+        required: [true, 'El id del arrendatario es obligatorio'],
+    },
     // mensaje - longitud del mensaje?
     message: {
         type: String,

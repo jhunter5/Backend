@@ -29,6 +29,9 @@ const Tenant = new Schema({
         minlength: [3, 'El apellido debe tener mínimo 3 caracteres'],
         maxlength: [50, 'El apellido debe tener máximo 50 caracteres'],       
     },
+    avatar: {
+        type: String,
+    },
     phone: {
         type: String,
         required: [true, 'El número de teléfono es obligatorio'],
@@ -57,7 +60,7 @@ const Tenant = new Schema({
         type: String,
         required: [true, 'El genero es obligatorio'],
         match: [
-            /^(Masculino|Femenino|No Binario)$/,
+            /^(Masculino|Femenino)$/,
             'Por favor, ingrese un correo electrónico válido',
           ],
     },
@@ -114,7 +117,11 @@ const Tenant = new Schema({
         min: [0, 'La clasificación mínima debe ser 0'],
         max: [10, 'La clasificación máxima debe ser 10'],
     },
-    // EsFamilia - preguntar a Juan
+    // es_familia
+    isFamily: {
+        type: Boolean,
+        default: false,
+    },
     // antiguedad_plataforma - en días, aunque, sujeto a cambios
     tenure: {
         type: Number,

@@ -2,6 +2,12 @@ import { InferSchemaType, model, Schema} from 'mongoose';
 
 // gasto
 const Expense = new Schema({
+    // propiedad_id - FK
+    property: {
+        type: Schema.Types.ObjectId,
+        ref: 'property',
+        required: [true, 'El id de la propiedad es obligatorio'],
+    },
     // descripción
     description: {
         type: String,

@@ -2,6 +2,12 @@ import { InferSchemaType, model, Schema} from 'mongoose';
 
 // propiedad_media
 const PropertyMedia = new Schema({
+    // propiedad_id - FK
+    property: {
+        type: Schema.Types.ObjectId,
+        ref: 'property',
+        required: [true, 'El id de la propiedad es obligatorio'],
+    },
     // tipo_media
     mediaType: {
         type: String,

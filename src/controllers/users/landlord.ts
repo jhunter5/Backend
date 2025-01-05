@@ -2,15 +2,36 @@ import { RequestHandler } from "express";
 import { LandlordModel } from "../../models/users/landlord";
 import createHttpError from "http-errors";
 
+import { uploadFileS3 } from "../../utils/S3"; // Asegúrate de importar correctamente la función de subida
+
 export const createLandlord: RequestHandler = async (req, res, next) => {
   try {
-    const { id, firstName, lastName, phone, email, numberOfProperties, avgRating } = req.body;
+    const {
+      id,
+      firstName,
+      lastName,
+      phone,
+      email,
+      numberOfProperties,
+      avgRating,
+    } = req.body;
+    const avatarFile = req.files?.file; // La imagen enviada en el campo `file`
 
+    // Verificar si el landlord ya existe
     const existingLandlord = await LandlordModel.findOne({ id }).exec();
     if (existingLandlord) {
       throw createHttpError(409, "ID Already Taken");
     }
 
+    // Subir la imagen del avatar a S3
+    let avatarUrl = null;
+    if (avatarFile) {
+      avatarUrl = await uploadFileS3(avatarFile); // Subir archivo y obtener URL
+    } else {
+      avatarUrl = ""; // Avatar predeterminado
+    }
+
+    // Crear el nuevo landlord
     const newLandlord = await LandlordModel.create({
       id,
       firstName,
@@ -19,6 +40,7 @@ export const createLandlord: RequestHandler = async (req, res, next) => {
       email,
       numberOfProperties,
       avgRating,
+      avatar: avatarUrl, // Asignar el enlace del avatar
     });
 
     res.status(201).json(newLandlord);

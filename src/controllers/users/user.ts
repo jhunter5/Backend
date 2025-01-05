@@ -4,6 +4,7 @@ import createHttpError from "http-errors";
 
 export const createUser: RequestHandler = async (req, res, next) => {
   try {
+   
     const { name, phone, age, email } = req.body;
     const existingUsername = await UserModel.findOne({
       phone: phone,
