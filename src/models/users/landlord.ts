@@ -54,12 +54,6 @@ const Landlord = new Schema({
       "Por favor, ingrese un correo electrónico válido",
     ],
   },
-  // numero_propiedades
-  numberOfProperties: {
-    type: Number,
-    default: 0,
-    min: [0, "El número de propiedades no puede ser negativo"],
-  },
   avatar: {
     type: String,
   },
@@ -69,16 +63,6 @@ const Landlord = new Schema({
     default: 0,
     min: [0, "La calificación mínima del arrendatario es 0"],
     max: [10, "La calificación máxima del arrendatario es 10"],
-  },
-  // porcentaje_cumplimento
-  fulfillmentPercentage: {
-    type: Number,
-    default: 0,
-    min: [0, "El porcentaje de cumplimiento de tiempo de contrato mínimo es 0"],
-    max: [
-      100,
-      "El porcentaje de cumplimiento de tiempo de contrato máximo es 100",
-    ],
   },
   createdAt: {
     type: Date,

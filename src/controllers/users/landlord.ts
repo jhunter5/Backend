@@ -12,10 +12,8 @@ export const createLandlord: RequestHandler = async (req, res, next) => {
       lastName,
       phone,
       email,
-      numberOfProperties,
       avgRating,
       authID,
-      fulfillmentPercentage, // Nuevo atributo
       gender
     } = req.body;
     const avatarFile = req.files?.file; // La imagen enviada en el campo `file`
@@ -41,12 +39,10 @@ export const createLandlord: RequestHandler = async (req, res, next) => {
       lastName,
       phone,
       email,
-      numberOfProperties,
       avgRating,
       authID,
       gender,
       avatar: avatarUrl, // Asignar el enlace del avatar
-      fulfillmentPercentage, // Usar el valor proporcionado o el valor predeterminado
     });
 
     res.status(201).json(newLandlord);
@@ -84,7 +80,6 @@ export const updateLandlord: RequestHandler = async (req, res, next) => {
         email,
         numberOfProperties,
         avgRating,
-        fulfillmentPercentage,
         ...(avatarUrl && { avatar: avatarUrl }), // Actualizar avatar solo si se proporciona
         updatedAt: new Date(),
       },
