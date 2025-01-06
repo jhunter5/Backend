@@ -26,11 +26,11 @@ export const getLandlordPreferencesByLandlord: RequestHandler = async (req, res,
   try {
     const { landlordId } = req.params;
 
-    const preferences = await LandlordPreferenceModel.find({ landlord: landlordId })
+    const preferences = await LandlordPreferenceModel.findOne({ landlordAuthID: landlordId })
       .populate("landlord", "firstName lastName") // Poblar datos del arrendatario
       .exec();
 
-    if (!preferences || preferences.length === 0) {
+    if (!preferences) {
       throw createHttpError(404, `Preferences for landlord with ID ${landlordId} not found`);
     }
 

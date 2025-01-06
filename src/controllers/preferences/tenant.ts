@@ -26,11 +26,11 @@ export const getTenantPreferencesByTenant: RequestHandler = async (req, res, nex
   try {
     const { tenantId } = req.params;
 
-    const preferences = await TenantPreferenceModel.find({ tenant: tenantId })
+    const preferences = await TenantPreferenceModel.findOne({ tenantAuthID: tenantId })
       .populate("tenant", "firstName lastName email") // Poblar datos del inquilino
       .exec();
 
-    if (!preferences || preferences.length === 0) {
+    if (!preferences) {
       throw createHttpError(404, `Preferences for tenant with ID ${tenantId} not found`);
     }
 

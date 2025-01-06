@@ -3,9 +3,9 @@ import { InferSchemaType, model, Schema} from 'mongoose';
 // preferencia_arrendatario
 const TenantPreference = new Schema({
     // inquilino_id - FK
-    landlordAuthID: {
+    tenantAuthID: {
         type: String,
-        ref: 'landlord', // Referencia al modelo landlord
+        ref: 'tenant', // Referencia al modelo landlord
         required: [true, 'El authID del arrendatario es obligatorio'],
         trim: true,
     },
