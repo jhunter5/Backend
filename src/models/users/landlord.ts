@@ -28,6 +28,14 @@ const Landlord = new Schema({
     minlength: [3, "El apellido debe tener mínimo 3 caracteres"],
     maxlength: [50, "El apellido debe tener máximo 50 caracteres"],
   },
+  gender: {
+    type: String,
+    required: [true, 'El genero es obligatorio'],
+    match: [
+        /^(Masculino|Femenino)$/,
+        'Por favor, ingrese un correo electrónico válido',
+      ],
+},
   phone: {
     type: String,
     required: [true, "El número de teléfono es obligatorio"],
