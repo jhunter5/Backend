@@ -18,7 +18,7 @@ const LandlordRouter = express.Router();
 
 /**
  * @swagger
- * /api/landlords:
+ * /api/landlord:
  *   get:
  *     tags:
  *       - Landlords
@@ -39,7 +39,7 @@ LandlordRouter.get("/", showLandlords);
 
 /**
  * @swagger
- * /api/landlords/{id}:
+ * /api/landlord/{id}:
  *   get:
  *     tags:
  *       - Landlords
@@ -65,7 +65,7 @@ LandlordRouter.get("/:id", showLandlord);
 
 /**
  * @swagger
- * /api/landlords:
+ * /api/landlord:
  *   post:
  *     tags:
  *       - Landlords
@@ -88,7 +88,7 @@ LandlordRouter.post("/", createLandlord);
 
 /**
  * @swagger
- * /api/landlords/{id}:
+ * /api/landlord/{id}:
  *   patch:
  *     tags:
  *       - Landlords
@@ -120,7 +120,7 @@ LandlordRouter.patch("/:id", updateLandlord);
 
 /**
  * @swagger
- * /api/landlords/{id}:
+ * /api/landlord/{id}:
  *   delete:
  *     tags:
  *       - Landlords

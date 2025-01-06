@@ -65,6 +65,23 @@ export const createProperty: RequestHandler = async (req, res, next) => {
         property: newProperty,
       });
   } catch (error) {
+    if ((error as any).name === "ValidationError") {
+      // Manejo de errores de validación de Mongoose
+      const validationErrors = Object.values((error as any).errors).map((err: any) => ({
+        field: err.path,
+        message: err.message,
+      }));
+      res.status(400).json({
+        message: "Validation failed",
+        errors: validationErrors,
+      });
+      return; // Asegurarse de no continuar después de enviar una respuesta
+    }
+
+    // Registrar otros errores para depuración
+    console.error(error);
+
+    // Pasar el error a otros middlewares
     next(error);
   }
 };

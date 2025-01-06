@@ -18,7 +18,7 @@ const TenantRouter = express.Router();
 
 /**
  * @swagger
- * /api/tenants:
+ * /api/tenant:
  *   get:
  *     tags:
  *       - Tenants
@@ -39,7 +39,7 @@ TenantRouter.get("/", showTenants);
 
 /**
  * @swagger
- * /api/tenants/{id}:
+ * /api/tenant/{id}:
  *   get:
  *     tags:
  *       - Tenants
@@ -65,7 +65,7 @@ TenantRouter.get("/:id", showTenant);
 
 /**
  * @swagger
- * /api/tenants:
+ * /api/tenant:
  *   post:
  *     tags:
  *       - Tenants
@@ -88,7 +88,7 @@ TenantRouter.post("/", createTenant);
 
 /**
  * @swagger
- * /api/tenants/{id}:
+ * /api/tenant/{id}:
  *   patch:
  *     tags:
  *       - Tenants
@@ -120,7 +120,7 @@ TenantRouter.patch("/:id", updateTenant);
 
 /**
  * @swagger
- * /api/tenants/{id}:
+ * /api/tenant/{id}:
  *   delete:
  *     tags:
  *       - Tenants

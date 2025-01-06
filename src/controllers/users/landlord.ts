@@ -14,14 +14,15 @@ export const createLandlord: RequestHandler = async (req, res, next) => {
       email,
       avgRating,
       authID,
-      gender
+      gender,
     } = req.body;
     const avatarFile = req.files?.file; // La imagen enviada en el campo `file`
 
     // Verificar si el landlord ya existe
     const existingLandlord = await LandlordModel.findOne({ authID }).exec();
     if (existingLandlord) {
-      throw createHttpError(409, "ID Already Taken");
+      res.status(409).json({ message: "ID Already Taken" });
+      return;
     }
 
     // Subir la imagen del avatar a S3
@@ -47,9 +48,27 @@ export const createLandlord: RequestHandler = async (req, res, next) => {
 
     res.status(201).json(newLandlord);
   } catch (error) {
+    if ((error as any).name === "ValidationError") {
+      // Manejo de errores de validación de Mongoose
+      const validationErrors = Object.values((error as any).errors).map((err: any) => ({
+        field: err.path,
+        message: err.message,
+      }));
+      res.status(400).json({
+        message: "Validation failed",
+        errors: validationErrors,
+      });
+      return; // Asegurarse de no continuar después de enviar una respuesta
+    }
+
+    // Registrar otros errores para depuración
+    console.error(error);
+
+    // Pasar el error a otros middlewares
     next(error);
   }
 };
+
 
 export const updateLandlord: RequestHandler = async (req, res, next) => {
   try {
