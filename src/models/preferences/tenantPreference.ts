@@ -17,10 +17,8 @@ const TenantPreference = new Schema({
     },
     // valor_preferencia
     preferenceValue: {
-        type: Number,
+        type: String,
         required: [true, 'El valor de la preferencia es obligatoria'],
-        min: [0, 'El valor mínimo de la preferencia es 0'],
-        max: [10, 'El valor máximo de la preferencia es 10'],
     },
     createdAt: {
         type: Date,

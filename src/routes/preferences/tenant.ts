@@ -163,8 +163,8 @@ export default TenantPreferenceRouter;
  *           type: string
  *           description: Tipo de preferencia.
  *         preferenceValue:
- *           type: number
- *           description: Valor de la preferencia (0-10).
+ *           type: string
+ *           description: Valor de la preferencia 
  *         createdAt:
  *           type: string
  *           format: date-time
@@ -183,6 +183,6 @@ export default TenantPreferenceRouter;
  *           type: string
  *           description: Tipo de preferencia.
  *         preferenceValue:
- *           type: number
- *           description: Valor de la preferencia (0-10).
+ *           type: string
+ *           description: Valor de la preferencia.
  */
