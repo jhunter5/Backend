@@ -3,10 +3,11 @@ import { InferSchemaType, model, Schema} from 'mongoose';
 // preferencia_arrendatario
 const TenantPreference = new Schema({
     // inquilino_id - FK
-    tenant: {
-        type: Schema.Types.ObjectId,
-        ref: 'tenant',
-        required: [true, 'El id del inquilino es obligatorio'],
+    landlordAuthID: {
+        type: String,
+        ref: 'landlord', // Referencia al modelo landlord
+        required: [true, 'El authID del arrendatario es obligatorio'],
+        trim: true,
     },
     // tipo_preferencia
     preferenceType: {

@@ -10,6 +10,7 @@ import RepairRouter from "./processes/repair";
 import ReviewRouter from "./processes/review";
 import AuthRouter from "./auth/auth";
 import LandlordRouter from "./users/landlord";
+import TenantPreferenceRouter from "./preferences/tenant";
 
 
 const router = express.Router();
@@ -24,5 +25,6 @@ router.use("/payment", PaymentRouter);
 router.use("/repair", RepairRouter);
 router.use("/review", ReviewRouter);
 router.use("/auth", AuthRouter);
-
+router.use("/tenant-preferences", TenantPreferenceRouter);
+router.use("/landlord-preferences", TenantPreferenceRouter);
 export default router;

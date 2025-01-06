@@ -14,11 +14,13 @@ export const createLandlord: RequestHandler = async (req, res, next) => {
       email,
       numberOfProperties,
       avgRating,
+      authID,
+      fulfillmentPercentage, // Nuevo atributo
     } = req.body;
     const avatarFile = req.files?.file; // La imagen enviada en el campo `file`
 
     // Verificar si el landlord ya existe
-    const existingLandlord = await LandlordModel.findOne({ id }).exec();
+    const existingLandlord = await LandlordModel.findOne({ authID }).exec();
     if (existingLandlord) {
       throw createHttpError(409, "ID Already Taken");
     }
@@ -40,7 +42,9 @@ export const createLandlord: RequestHandler = async (req, res, next) => {
       email,
       numberOfProperties,
       avgRating,
+      authID,
       avatar: avatarUrl, // Asignar el enlace del avatar
+      fulfillmentPercentage, // Usar el valor proporcionado o el valor predeterminado
     });
 
     res.status(201).json(newLandlord);
@@ -52,11 +56,36 @@ export const createLandlord: RequestHandler = async (req, res, next) => {
 export const updateLandlord: RequestHandler = async (req, res, next) => {
   try {
     const { id } = req.params;
-    const { firstName, lastName, phone, email, numberOfProperties, avgRating } = req.body;
+    const {
+      firstName,
+      lastName,
+      phone,
+      email,
+      numberOfProperties,
+      avgRating,
+      fulfillmentPercentage, // Nuevo atributo
+    } = req.body;
+    const avatarFile = req.files?.file; // La imagen enviada en el campo `file`
+
+    // Subir una nueva imagen si se proporciona
+    let avatarUrl = null;
+    if (avatarFile) {
+      avatarUrl = await uploadFileS3(avatarFile);
+    }
 
     const updatedLandlord = await LandlordModel.findOneAndUpdate(
-      { id },
-      { firstName, lastName, phone, email, numberOfProperties, avgRating, updatedAt: new Date() },
+      { authID: id },
+      {
+        firstName,
+        lastName,
+        phone,
+        email,
+        numberOfProperties,
+        avgRating,
+        fulfillmentPercentage,
+        ...(avatarUrl && { avatar: avatarUrl }), // Actualizar avatar solo si se proporciona
+        updatedAt: new Date(),
+      },
       { new: true }
     ).exec();
 
@@ -70,11 +99,12 @@ export const updateLandlord: RequestHandler = async (req, res, next) => {
   }
 };
 
+
 export const deleteLandlord: RequestHandler = async (req, res, next) => {
   try {
     const { id } = req.params;
 
-    const deletedLandlord = await LandlordModel.findOneAndDelete({ id }).exec();
+    const deletedLandlord = await LandlordModel.findOneAndDelete({  authID:id }).exec();
     if (!deletedLandlord) {
       throw createHttpError(404, `Landlord with ID ${id} not found`);
     }
@@ -89,7 +119,7 @@ export const showLandlord: RequestHandler = async (req, res, next) => {
   try {
     const { id } = req.params;
 
-    const landlord = await LandlordModel.findOne({ id }).exec();
+    const landlord = await LandlordModel.findOne({ authID: id}).exec();
     if (!landlord) {
       throw createHttpError(404, `Landlord with ID ${id} not found`);
     }

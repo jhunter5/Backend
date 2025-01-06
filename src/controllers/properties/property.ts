@@ -150,7 +150,7 @@ export const showPropertiesByUser: RequestHandler = async (req, res, next) => {
 
   try {
     // Buscar propiedades asociadas al usuario
-    const properties = await PropertyModel.find({ landlord:"677b06ae4d1beaef236bb640" }).exec();
+    const properties = await PropertyModel.find({ landlordAuthID: userId }).exec();
     if (!properties || properties.length === 0) {
       throw createHttpError(404, "No properties found");
     }

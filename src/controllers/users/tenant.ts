@@ -9,7 +9,7 @@ export const createTenant: RequestHandler = async (req, res, next) => {
     const avatarFile = req.files?.file; // La imagen enviada en el campo `file`
 
     // Verificar si el tenant ya existe
-    const existingTenant = await TenantModel.findOne({ id: tenantData.id }).exec();
+    const existingTenant = await TenantModel.findOne({ authID: tenantData.authID }).exec();
     if (existingTenant) {
       throw createHttpError(409, "ID Already Taken");
     }
@@ -39,7 +39,7 @@ export const updateTenant: RequestHandler = async (req, res, next) => {
     const { id } = req.params;
     const updatedData = req.body;
 
-    const updatedTenant = await TenantModel.findOneAndUpdate({ id }, updatedData, {
+    const updatedTenant = await TenantModel.findOneAndUpdate({ authID:id }, updatedData, {
       new: true,
     }).exec();
 
@@ -57,7 +57,7 @@ export const deleteTenant: RequestHandler = async (req, res, next) => {
   try {
     const { id } = req.params;
 
-    const deletedTenant = await TenantModel.findOneAndDelete({ id }).exec();
+    const deletedTenant = await TenantModel.findOneAndDelete({ authID:id }).exec();
     if (!deletedTenant) {
       throw createHttpError(404, `Tenant with ID ${id} not found`);
     }
@@ -72,7 +72,7 @@ export const showTenant: RequestHandler = async (req, res, next) => {
   try {
     const { id } = req.params;
 
-    const tenant = await TenantModel.findOne({ id }).exec();
+    const tenant = await TenantModel.findOne({ authID:id }).exec();
     if (!tenant) {
       throw createHttpError(404, `Tenant with ID ${id} not found`);
     }
