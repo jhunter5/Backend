@@ -42,7 +42,26 @@ export const createTenant: RequestHandler = async (req, res, next) => {
       });
       return; // Asegurarse de no continuar después de enviar una respuesta
     }
+    if ((error as any).code === 11000) {
+      // Manejo de errores de clave duplicada
+      const duplicateKey = Object.keys((error as any).keyPattern).join(", ");
+      res.status(409).json({
+        message: "Duplicate key error",
+        error: `The field(s) ${duplicateKey} must be unique.`,
+        details: (error as any).keyValue,
+      });
+      return;
+    }
 
+    // Otros errores de MongoDB
+    if ((error as any).name === "MongoServerError") {
+      res.status(500).json({
+        message: "MongoDB Server Error",
+        error: (error as any).errmsg || "An unknown MongoDB error occurred.",
+        details: error,
+      });
+      return;
+    }
     // Registrar otros errores para depuración
     console.error(error);
 
