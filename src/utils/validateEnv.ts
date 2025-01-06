@@ -12,4 +12,5 @@ export default cleanEnv(process.env, {
   AWS_SECRET_KEY_ID: str(),
   AUTH_SECRET_ID: str(),
   AUTH_CLIENT_ID: str(),
+  BACKEND_LINK:str(),
 });

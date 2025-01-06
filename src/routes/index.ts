@@ -9,12 +9,14 @@ import PaymentRouter from "./processes/payment";
 import RepairRouter from "./processes/repair";
 import ReviewRouter from "./processes/review";
 import AuthRouter from "./auth/auth";
+import LandlordRouter from "./users/landlord";
 
 
 const router = express.Router();
 
 router.use("/user", UserRouter);
 router.use("/tenant", TenantRouter);
+router.use("/landlord", LandlordRouter);
 router.use("/property", PropertyRouter);
 router.use("/propertyMedia", PropertyMediaRouter);
 router.use("/application", ApplicationRouter);
