@@ -16,8 +16,7 @@ export const createLandlord: RequestHandler = async (req, res, next) => {
       authID,
       gender,
     } = req.body;
-    const avatarFile = req.files?.file; // La imagen enviada en el campo `file`
-
+    const avatarFile = req.files?.files; // La imagen enviada en el campo `files`
     // Verificar si el landlord ya existe
     const existingLandlord = await LandlordModel.findOne({ authID }).exec();
     if (existingLandlord) {

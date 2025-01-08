@@ -6,7 +6,7 @@ import { uploadFileS3 } from "../../utils/S3";
 export const createTenant: RequestHandler = async (req, res, next) => {
   try {
     const tenantData = req.body;
-    const avatarFile = req.files?.file; // La imagen enviada en el campo `file`
+    const avatarFile = req.files?.files; // La imagen enviada en el campo `file`
 
     // Verificar si el tenant ya existe
     const existingTenant = await TenantModel.findOne({ authID: tenantData.authID }).exec();
