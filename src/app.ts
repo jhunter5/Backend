@@ -16,7 +16,7 @@ app.use(express.json());
 app.use(
   cors());
 
-app.use(fileUpload({useTempFiles:true, tempFileDir: "./uploads/"}));
+  app.use(fileUpload({ useTempFiles: false }));
 
 app.use(morgan("dev"));
 
