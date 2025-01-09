@@ -10,6 +10,10 @@ const Tenant = new Schema({
         min: [1111111, 'La cédula debe tener mínimo 7 dígitos'],
         max: [9999999999, 'La cédula debe tener máximo 10 dígitos'],
     },
+    authID:{
+        type: String,
+        required: [true, "El id de autenticación es obligatorio"]
+    },
     // tipo_identificacion
     idType: {
         type: String,

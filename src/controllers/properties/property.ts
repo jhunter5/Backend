@@ -19,8 +19,10 @@ export const createProperty: RequestHandler = async (req, res, next) => {
     age,
     floors,
     description,
+    landlordAuthID,
   } = req.body;
   const files = req.files?.files; // Array de archivos multimedia
+  console.log(req.files)
   try {
     // Crear la propiedad
     const newProperty = await PropertyModel.create({
@@ -36,6 +38,7 @@ export const createProperty: RequestHandler = async (req, res, next) => {
       age,
       floors,
       description,
+      landlordAuthID,
     });
 
     // Manejar los archivos multimedia
@@ -46,6 +49,7 @@ export const createProperty: RequestHandler = async (req, res, next) => {
 
         // Crear el documento PropertyMedia con referencia a la propiedad
         return await PropertyMediaModel.create({
+          property: newProperty._id,
           mediaType: file.mimetype,
           mediaUrl: s3Result,
           description: file.description || "",
@@ -56,15 +60,36 @@ export const createProperty: RequestHandler = async (req, res, next) => {
 
       // Esperar a que todas las promesas terminen
       await Promise.all(mediaPromises);
+    }else{
+      
+      throw new Error(`Failed to upload file, there's no file to upload`);
+
     }
 
-    res
-      .status(201)
-      .json({
-        message: "Property created successfully",
-        property: newProperty,
-      });
+    res.status(201).json({
+      message: "Property created successfully",
+      property: newProperty,
+    });
   } catch (error) {
+    if ((error as any).name === "ValidationError") {
+      // Manejo de errores de validación de Mongoose
+      const validationErrors = Object.values((error as any).errors).map(
+        (err: any) => ({
+          field: err.path,
+          message: err.message,
+        })
+      );
+      res.status(400).json({
+        message: "Validation failed",
+        errors: validationErrors,
+      });
+      return; // Asegurarse de no continuar después de enviar una respuesta
+    }
+
+    // Registrar otros errores para depuración
+    console.error(error);
+
+    // Pasar el error a otros middlewares
     next(error);
   }
 };
@@ -150,7 +175,9 @@ export const showPropertiesByUser: RequestHandler = async (req, res, next) => {
 
   try {
     // Buscar propiedades asociadas al usuario
-    const properties = await PropertyModel.find({ landlord:"677b06ae4d1beaef236bb640" }).exec();
+    const properties = await PropertyModel.find({
+      landlordAuthID: userId,
+    }).exec();
     if (!properties || properties.length === 0) {
       throw createHttpError(404, "No properties found");
     }
@@ -158,11 +185,15 @@ export const showPropertiesByUser: RequestHandler = async (req, res, next) => {
     // Mapear propiedades con sus respectivos medios
     const propertiesWithMedia = await Promise.all(
       properties.map(async (property) => {
-        const media = await PropertyMediaModel.find({ propertyId: property._id }).exec();
-        const contract = await ContractModel.findOne({ propertyId: property._id })
-        .populate("tenant", "name email") // Poblar datos del inquilino si es necesario
-        .exec();
-  
+        const media = await PropertyMediaModel.find({
+          propertyId: property._id,
+        }).exec();
+        const contract = await ContractModel.findOne({
+          propertyId: property._id,
+        })
+          .populate("tenant", "name email") // Poblar datos del inquilino si es necesario
+          .exec();
+
         return { ...property.toObject(), media, contract };
       })
     );

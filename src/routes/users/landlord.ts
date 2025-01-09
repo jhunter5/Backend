@@ -1,22 +1,31 @@
 import express from "express";
-import { createLandlord, deleteLandlord, showLandlord, showLandlords, updateLandlord } from "../../controllers/users/landlord";
+import {
+  createLandlord,
+  updateLandlord,
+  deleteLandlord,
+  showLandlord,
+  showLandlords,
+} from "../../controllers/users/landlord";
 
 const LandlordRouter = express.Router();
-LandlordRouter.post("/", createLandlord);
-LandlordRouter.get("/", showLandlords);
-LandlordRouter.patch("/:id", updateLandlord);
-LandlordRouter.delete("/:id", deleteLandlord);
-LandlordRouter.get("/:id", showLandlord);
+
+/**
+ * @swagger
+ * tags:
+ *   - name: Landlords
+ *     description: Operaciones relacionadas con los arrendadores
+ */
+
 /**
  * @swagger
  * /api/landlord:
  *   get:
  *     tags:
  *       - Landlords
- *     summary: Obtener todos los landlords
+ *     summary: Obtener todos los arrendadores
  *     responses:
  *       '200':
- *         description: Lista de landlords
+ *         description: Lista de arrendadores
  *         content:
  *           application/json:
  *             schema:
@@ -24,11 +33,43 @@ LandlordRouter.get("/:id", showLandlord);
  *               items:
  *                 $ref: '#/components/schemas/Landlord'
  *       '404':
- *         description: No se encontraron landlords
+ *         description: No se encontraron arrendadores
+ */
+LandlordRouter.get("/", showLandlords);
+
+/**
+ * @swagger
+ * /api/landlord/{id}:
+ *   get:
+ *     tags:
+ *       - Landlords
+ *     summary: Obtener un arrendador por su ID
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: ID del arrendador
+ *     responses:
+ *       '200':
+ *         description: Arrendador encontrado
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Landlord'
+ *       '404':
+ *         description: No se encontró el arrendador
+ */
+LandlordRouter.get("/:id", showLandlord);
+
+/**
+ * @swagger
+ * /api/landlord:
  *   post:
  *     tags:
  *       - Landlords
- *     summary: Crear un nuevo landlord
+ *     summary: Crear un nuevo arrendador
  *     requestBody:
  *       required: true
  *       content:
@@ -37,47 +78,28 @@ LandlordRouter.get("/:id", showLandlord);
  *             $ref: '#/components/schemas/LandlordInput'
  *     responses:
  *       '201':
- *         description: Landlord creado exitosamente
+ *         description: Arrendador creado exitosamente
  *         content:
  *           application/json:
  *             schema:
  *               $ref: '#/components/schemas/Landlord'
- *       '409':
- *         description: ID ya registrado
  */
+LandlordRouter.post("/", createLandlord);
 
 /**
  * @swagger
  * /api/landlord/{id}:
- *   get:
- *     tags:
- *       - Landlords
- *     summary: Obtener un landlord por su ID
- *     parameters:
- *       - in: path
- *         name: id
- *         required: true
- *         schema:
- *           type: string
- *     responses:
- *       '200':
- *         description: Landlord encontrado
- *         content:
- *           application/json:
- *             schema:
- *               $ref: '#/components/schemas/Landlord'
- *       '404':
- *         description: Landlord no encontrado
  *   patch:
  *     tags:
  *       - Landlords
- *     summary: Actualizar un landlord por su ID
+ *     summary: Actualizar un arrendador por su ID
  *     parameters:
  *       - in: path
  *         name: id
  *         required: true
  *         schema:
  *           type: string
+ *         description: ID del arrendador
  *     requestBody:
  *       required: true
  *       content:
@@ -86,29 +108,38 @@ LandlordRouter.get("/:id", showLandlord);
  *             $ref: '#/components/schemas/LandlordInput'
  *     responses:
  *       '200':
- *         description: Landlord actualizado exitosamente
+ *         description: Arrendador actualizado exitosamente
  *         content:
  *           application/json:
  *             schema:
  *               $ref: '#/components/schemas/Landlord'
  *       '404':
- *         description: Landlord no encontrado
+ *         description: No se encontró el arrendador
+ */
+LandlordRouter.patch("/:id", updateLandlord);
+
+/**
+ * @swagger
+ * /api/landlord/{id}:
  *   delete:
  *     tags:
  *       - Landlords
- *     summary: Eliminar un landlord por su ID
+ *     summary: Eliminar un arrendador por su ID
  *     parameters:
  *       - in: path
  *         name: id
  *         required: true
  *         schema:
  *           type: string
+ *         description: ID del arrendador
  *     responses:
  *       '200':
- *         description: Landlord eliminado exitosamente
+ *         description: Arrendador eliminado exitosamente
  *       '404':
- *         description: Landlord no encontrado
+ *         description: No se encontró el arrendador
  */
+LandlordRouter.delete("/:id", deleteLandlord);
+
 export default LandlordRouter;
 
 /**
@@ -119,46 +150,70 @@ export default LandlordRouter;
  *       type: object
  *       properties:
  *         id:
- *           type: integer
+ *           type: number
+ *           description: Número de cédula del arrendador
+ *         authID:
+ *           type: string
+ *           description: ID de autenticación único
  *         firstName:
  *           type: string
+ *           description: Nombre del arrendador
  *         lastName:
  *           type: string
+ *           description: Apellido del arrendador
+ *         gender:
+ *           type: string
+ *           description: Género del arrendador
+ *           enum:
+ *             - Masculino
+ *             - Femenino
  *         phone:
  *           type: string
+ *           description: Número de teléfono del arrendador
  *         email:
  *           type: string
- *         numberOfProperties:
- *           type: integer
+ *           description: Correo electrónico del arrendador
+ *         avatar:
+ *           type: string
+ *           description: URL del avatar del arrendador
  *         avgRating:
  *           type: number
+ *           description: Calificación promedio del arrendador
+ *           minimum: 0
+ *           maximum: 10
  *         createdAt:
  *           type: string
  *           format: date-time
+ *           description: Fecha de creación
  *         updatedAt:
  *           type: string
  *           format: date-time
+ *           description: Fecha de última actualización
  *     LandlordInput:
  *       type: object
  *       properties:
  *         id:
- *           type: integer
+ *           type: number
+ *           description: Número de cédula del arrendador
+ *         authID:
+ *           type: string
+ *           description: ID de autenticación único
  *         firstName:
  *           type: string
+ *           description: Nombre del arrendador
  *         lastName:
  *           type: string
+ *           description: Apellido del arrendador
+ *         gender:
+ *           type: string
+ *           description: Género del arrendador
+ *           enum:
+ *             - Masculino
+ *             - Femenino
  *         phone:
  *           type: string
+ *           description: Número de teléfono del arrendador
  *         email:
  *           type: string
- *         numberOfProperties:
- *           type: integer
- *         avgRating:
- *           type: number
- *       required:
- *         - id
- *         - firstName
- *         - lastName
- *         - phone
- *         - email
- */
+ *           description: Correo electrónico del arrendador
+*/

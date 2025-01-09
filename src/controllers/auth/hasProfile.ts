@@ -7,7 +7,7 @@ export const verifyProfile: RequestHandler = async (req, res, next) => {
 
   try {
     // Buscar en el modelo Tenant
-    const tenant = await TenantModel.findOne({ authId: userId }).exec();
+    const tenant = await TenantModel.findOne({ authID: userId }).exec();
 
     if (tenant) {
       res.status(200).json({ hasProfile: true, role: "Tenant" });
@@ -15,7 +15,7 @@ export const verifyProfile: RequestHandler = async (req, res, next) => {
     }
 
     // Buscar en el modelo Landlord
-    const landlord = await LandlordModel.findOne({ authId: userId }).exec();
+    const landlord = await LandlordModel.findOne({ authID: userId }).exec();
 
     if (landlord) {
       res.status(200).json({ hasProfile: true, role: "Landlord" });

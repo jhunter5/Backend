@@ -6,10 +6,10 @@ import { uploadFileS3 } from "../../utils/S3";
 export const createTenant: RequestHandler = async (req, res, next) => {
   try {
     const tenantData = req.body;
-    const avatarFile = req.files?.file; // La imagen enviada en el campo `file`
+    const avatarFile = req.files?.files; // La imagen enviada en el campo `file`
 
     // Verificar si el tenant ya existe
-    const existingTenant = await TenantModel.findOne({ id: tenantData.id }).exec();
+    const existingTenant = await TenantModel.findOne({ authID: tenantData.authID }).exec();
     if (existingTenant) {
       throw createHttpError(409, "ID Already Taken");
     }
@@ -30,6 +30,42 @@ export const createTenant: RequestHandler = async (req, res, next) => {
 
     res.status(201).json(newTenant);
   } catch (error) {
+    if ((error as any).name === "ValidationError") {
+      // Manejo de errores de validación de Mongoose
+      const validationErrors = Object.values((error as any).errors).map((err: any) => ({
+        field: err.path,
+        message: err.message,
+      }));
+      res.status(400).json({
+        message: "Validation failed",
+        errors: validationErrors,
+      });
+      return; // Asegurarse de no continuar después de enviar una respuesta
+    }
+    if ((error as any).code === 11000) {
+      // Manejo de errores de clave duplicada
+      const duplicateKey = Object.keys((error as any).keyPattern).join(", ");
+      res.status(409).json({
+        message: "Duplicate key error",
+        error: `The field(s) ${duplicateKey} must be unique.`,
+        details: (error as any).keyValue,
+      });
+      return;
+    }
+
+    // Otros errores de MongoDB
+    if ((error as any).name === "MongoServerError") {
+      res.status(500).json({
+        message: "MongoDB Server Error",
+        error: (error as any).errmsg || "An unknown MongoDB error occurred.",
+        details: error,
+      });
+      return;
+    }
+    // Registrar otros errores para depuración
+    console.error(error);
+
+    // Pasar el error a otros middlewares
     next(error);
   }
 };
@@ -39,7 +75,7 @@ export const updateTenant: RequestHandler = async (req, res, next) => {
     const { id } = req.params;
     const updatedData = req.body;
 
-    const updatedTenant = await TenantModel.findOneAndUpdate({ id }, updatedData, {
+    const updatedTenant = await TenantModel.findOneAndUpdate({ authID:id }, updatedData, {
       new: true,
     }).exec();
 
@@ -57,7 +93,7 @@ export const deleteTenant: RequestHandler = async (req, res, next) => {
   try {
     const { id } = req.params;
 
-    const deletedTenant = await TenantModel.findOneAndDelete({ id }).exec();
+    const deletedTenant = await TenantModel.findOneAndDelete({ authID:id }).exec();
     if (!deletedTenant) {
       throw createHttpError(404, `Tenant with ID ${id} not found`);
     }
@@ -72,7 +108,7 @@ export const showTenant: RequestHandler = async (req, res, next) => {
   try {
     const { id } = req.params;
 
-    const tenant = await TenantModel.findOne({ id }).exec();
+    const tenant = await TenantModel.findOne({ authID:id }).exec();
     if (!tenant) {
       throw createHttpError(404, `Tenant with ID ${id} not found`);
     }
