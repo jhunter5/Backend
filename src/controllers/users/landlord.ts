@@ -3,7 +3,6 @@ import { LandlordModel } from "../../models/users/landlord";
 import createHttpError from "http-errors";
 
 import { uploadFileS3 } from "../../utils/S3"; // Asegúrate de importar correctamente la función de subida
-import { PropertyModel } from "../../models/properties/property";
 
 export const createLandlord: RequestHandler = async (req, res, next) => {
   try {
