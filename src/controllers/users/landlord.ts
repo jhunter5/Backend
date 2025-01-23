@@ -3,6 +3,7 @@ import { LandlordModel } from "../../models/users/landlord";
 import createHttpError from "http-errors";
 
 import { uploadFileS3 } from "../../utils/S3"; // Asegúrate de importar correctamente la función de subida
+import { PropertyModel } from "../../models/properties/property";
 
 export const createLandlord: RequestHandler = async (req, res, next) => {
   try {
@@ -139,7 +140,7 @@ export const deleteLandlord: RequestHandler = async (req, res, next) => {
   try {
     const { id } = req.params;
 
-    const deletedLandlord = await LandlordModel.findOneAndDelete({  authID:id }).exec();
+    const deletedLandlord = await LandlordModel.findOneAndDelete({ authID: id }).exec();
     if (!deletedLandlord) {
       throw createHttpError(404, `Landlord with ID ${id} not found`);
     }
@@ -154,7 +155,7 @@ export const showLandlord: RequestHandler = async (req, res, next) => {
   try {
     const { id } = req.params;
 
-    const landlord = await LandlordModel.findOne({ authID: id}).exec();
+    const landlord = await LandlordModel.findOne({ authID: id }).exec();
     if (!landlord) {
       throw createHttpError(404, `Landlord with ID ${id} not found`);
     }
@@ -174,6 +175,51 @@ export const showLandlords: RequestHandler = async (req, res, next) => {
 
     res.status(200).json(landlords);
   } catch (error) {
+    next(error);
+  }
+};
+
+export const getActiveTenantsByLandlord: RequestHandler = async (req, res, next) => {
+  try {
+    const { id } = req.params;
+
+    const tenants = await LandlordModel.aggregate().match({ authID: id })
+      .lookup({ from: "properties", localField: "authID", foreignField: "landlordAuthID", as: "properties" })
+      .unwind("$properties")
+      .addFields({ "properties.id": { $toString: "$properties._id" } }) // Convertir a cadena para que la comparación sea con los mismos tipos
+      .lookup({ from: "contracts", localField: "properties.id", foreignField: "propertyId", as: "contracts" })
+      .addFields({
+        // Filtrar solo los contratos activos
+        contracts: {
+          $filter: {
+            input: "$contracts",
+            as: "contract",
+            cond: {
+              $and: [
+                { $lte: ["$$contract.startDate", new Date().toISOString()] },
+                { $gte: ["$$contract.endDate", new Date().toISOString()] },
+              ],
+            },
+          },
+        },
+      })
+      .unwind("$contracts")
+      .addFields({ "contracts.tenantObjectId": { $toObjectId: "$contracts.tenant" } }) // Convertir a ObjectId para que la comparación sea con los mismos tipos
+      .lookup({ from: "tenants", localField: "contracts.tenantObjectId", foreignField: "_id", as: "tenants" })
+      .group({
+        // Agrupar por ID de arrendador
+        _id: '$_id',
+        tenants: { $push: '$tenants' }
+      })
+      .exec();
+
+    if (!tenants || tenants.length === 0) {
+      throw createHttpError(404, "No active tenants found");
+    }
+
+    res.status(200).json(tenants);
+  } catch (error) {
+    console.error(error);
     next(error);
   }
 };
