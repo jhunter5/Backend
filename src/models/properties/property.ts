@@ -1,4 +1,4 @@
-import { InferSchemaType, model, Schema} from 'mongoose';
+import { InferSchemaType, model, Schema } from 'mongoose';
 
 const Property = new Schema({
     // arrendatario_id - FK
@@ -11,7 +11,7 @@ const Property = new Schema({
     // dirección
     address: {
         type: String,
-        required: [true, 'La dirección es obligatoria'],        
+        required: [true, 'La dirección es obligatoria'],
         maxlength: [200, 'La dirección debe tener máximo 200 caracteres'],
     },
     // municipio
@@ -19,21 +19,21 @@ const Property = new Schema({
         type: String,
         required: [true, 'La ciudad es obligatoria'],
         minlength: [3, 'La ciudad debe tener mínimo 3 caracteres'],
-        maxlength: [50, 'La ciudad debe tener máximo 50 caracteres'],       
+        maxlength: [50, 'La ciudad debe tener máximo 50 caracteres'],
     },
     // departamento
     state: {
         type: String,
         required: [true, 'El departamento es obligatorio'],
         minlength: [3, 'El departamento debe tener mínimo 3 caracteres'],
-        maxlength: [50, 'El departamento debe tener máximo 50 caracteres'],       
+        maxlength: [50, 'El departamento debe tener máximo 50 caracteres'],
     },
     // tipo
     type: {
         type: String,
         required: [true, 'El tipo de propiedad es obligatorio'],
         minlength: [3, 'El tipo debe tener mínimo 3 caracteres'],
-        maxlength: [50, 'El tipo debe tener máximo 50 caracteres'],       
+        maxlength: [50, 'El tipo debe tener máximo 50 caracteres'],
     },
     // habitaciones
     rooms: {
@@ -82,7 +82,13 @@ const Property = new Schema({
     description: {
         type: String,
         maxlength: [1000, 'La descripción máxima debe tener máximo 1000 caracteres'],
-    },    
+    },
+    // Esta en busqueda de inquilino
+    isAvailable: {
+        type: Boolean,
+        default: false,
+        required: [true, 'El estado de disponibilidad es obligatorio'],
+    },
     createdAt: {
         type: Date,
         default: Date.now,
@@ -95,6 +101,6 @@ const Property = new Schema({
 type PropertyType = InferSchemaType<typeof Property>
 // Crear el modelo a partir del esquema
 export const PropertyModel = model<PropertyType>(
-  'property',
-  Property
+    'property',
+    Property
 );
