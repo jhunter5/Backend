@@ -89,15 +89,9 @@ const Property = new Schema({
         default: false,
         required: [true, 'El estado de disponibilidad es obligatorio'],
     },
-    createdAt: {
-        type: Date,
-        default: Date.now,
-    },
-    updatedAt: {
-        type: Date,
-        default: Date.now,
-    },
-});
+},
+    { timestamps: true }
+);
 type PropertyType = InferSchemaType<typeof Property>
 // Crear el modelo a partir del esquema
 export const PropertyModel = model<PropertyType>(

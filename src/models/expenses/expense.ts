@@ -1,4 +1,4 @@
-import { InferSchemaType, model, Schema} from 'mongoose';
+import { InferSchemaType, model, Schema } from 'mongoose';
 
 // gasto
 const Expense = new Schema({
@@ -24,25 +24,19 @@ const Expense = new Schema({
         type: Number,
         required: [true, 'La categoria del gasto es obligatoria'],
         default: 0,
-        min: [0, 'La categoria del gasto debe ser un número positivo'],       
+        min: [0, 'La categoria del gasto debe ser un número positivo'],
     },
     // fecha_gasto
     expenseDate: {
         type: Date,
         required: [true, 'La fecha de inicio es obligatoria'],
     },
-    createdAt: {
-        type: Date,
-        default: Date.now,
-    },
-    updatedAt: {
-        type: Date,
-        default: Date.now,
-    },
-});
+},
+    { timestamps: true }
+);
 type ExpenseType = InferSchemaType<typeof Expense>
 // Crear el modelo a partir del esquema
 export const ExpenseModel = model<ExpenseType>(
-  "expense",
-  Expense
+    "expense",
+    Expense
 );

@@ -1,4 +1,4 @@
-import { InferSchemaType, model, Schema} from 'mongoose';
+import { InferSchemaType, model, Schema } from 'mongoose';
 
 // reseña
 const Review = new Schema({
@@ -33,18 +33,12 @@ const Review = new Schema({
         required: [true, 'La fecha de la reseña es obligatoria'],
         default: Date.now,
     },
-    createdAt: {
-        type: Date,
-        default: Date.now,
-    },
-    updatedAt: {
-        type: Date,
-        default: Date.now,
-    },
-});
+},
+    { timestamps: true }
+);
 type ReviewType = InferSchemaType<typeof Review>
 // Crear el modelo a partir del esquema
 export const ReviewModel = model<ReviewType>(
-  "review",
-  Review
+    "review",
+    Review
 );
