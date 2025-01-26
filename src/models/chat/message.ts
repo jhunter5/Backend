@@ -1,4 +1,4 @@
-import { InferSchemaType, model, Schema} from 'mongoose';
+import { InferSchemaType, model, Schema } from 'mongoose';
 
 // soporte_contrato
 const Message = new Schema({
@@ -18,18 +18,12 @@ const Message = new Schema({
         type: Date,
         required: [true, 'La fecha de inicio es obligatoria'],
     },
-    createdAt: {
-        type: Date,
-        default: Date.now,
-    },
-    updatedAt: {
-        type: Date,
-        default: Date.now,
-    },
-});
+},
+    { timestamps: true }
+);
 type MessageType = InferSchemaType<typeof Message>
 // Crear el modelo a partir del esquema
 export const MessageModel = model<MessageType>(
-  "message",
-  Message
+    "message",
+    Message
 );

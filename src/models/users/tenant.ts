@@ -1,4 +1,4 @@
-import { InferSchemaType, model, Schema} from 'mongoose';
+import { InferSchemaType, model, Schema } from 'mongoose';
 
 const Tenant = new Schema({
     // No existe una traducción para 'cedula', por eso id
@@ -10,7 +10,7 @@ const Tenant = new Schema({
         min: [1111111, 'La cédula debe tener mínimo 7 dígitos'],
         max: [9999999999, 'La cédula debe tener máximo 10 dígitos'],
     },
-    authID:{
+    authID: {
         type: String,
         required: [true, "El id de autenticación es obligatorio"]
     },
@@ -23,7 +23,7 @@ const Tenant = new Schema({
     },
     firstName: {
         type: String,
-        required: [true, 'El nombre es obligatorio'],        
+        required: [true, 'El nombre es obligatorio'],
         minlength: [3, 'El nombre debe tener mínimo 3 caracteres'],
         maxlength: [50, 'El nombre debe tener máximo 50 caracteres'],
     },
@@ -31,7 +31,7 @@ const Tenant = new Schema({
         type: String,
         required: [true, 'El apellido es obligatorio'],
         minlength: [3, 'El apellido debe tener mínimo 3 caracteres'],
-        maxlength: [50, 'El apellido debe tener máximo 50 caracteres'],       
+        maxlength: [50, 'El apellido debe tener máximo 50 caracteres'],
     },
     avatar: {
         type: String,
@@ -42,7 +42,7 @@ const Tenant = new Schema({
         match: [
             /^[0-9]{10,15}$/,
             'Por favor, ingrese un número de teléfono válido',
-          ],
+        ],
     },
     email: {
         type: String,
@@ -52,7 +52,7 @@ const Tenant = new Schema({
         match: [
             /^\w+([.-]?\w+)*@\w+([.-]?\w+)*(\.\w{2,3})+$/,
             'Por favor, ingrese un correo electrónico válido',
-          ],
+        ],
     },
     age: {
         type: Number,
@@ -66,7 +66,7 @@ const Tenant = new Schema({
         match: [
             /^(Masculino|Femenino)$/,
             'Por favor, ingrese un correo electrónico válido',
-          ],
+        ],
     },
     // estado_civil
     maritalStatus: {
@@ -75,7 +75,7 @@ const Tenant = new Schema({
         match: [
             /^(Soltero|Casado|Viudo|Divorciado|Unión Libre)$/,
             'Por favor, ingrese un correo electrónico válido',
-          ],
+        ],
     },
     // salario_actual
     salary: {
@@ -87,7 +87,7 @@ const Tenant = new Schema({
     contractType: {
         type: String,
         minlength: [3, 'El tipo de contrato debe tener mínimo 3 caracteres'],
-        maxlength: [50, 'El tipo de contrato debe tener máximo 50 caracteres'],  
+        maxlength: [50, 'El tipo de contrato debe tener máximo 50 caracteres'],
     },
     // industria
     industry: {
@@ -137,18 +137,12 @@ const Tenant = new Schema({
         default: 0,
         min: [0, 'Los días de antiguedad mínima deben ser 0'],
     },
-    createdAt: {
-        type: Date,
-        default: Date.now,
-    },
-    updatedAt: {
-        type: Date,
-        default: Date.now,
-    },
-});
+},
+    { timestamps: true }
+);
 type TenantType = InferSchemaType<typeof Tenant>
 // Crear el modelo a partir del esquema
 export const TenantModel = model<TenantType>(
-  'tenant',
-  Tenant
+    'tenant',
+    Tenant
 );

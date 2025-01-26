@@ -61,7 +61,7 @@ export const createProperty: RequestHandler = async (req, res, next) => {
       // Esperar a que todas las promesas terminen
       await Promise.all(mediaPromises);
     }
-    else{
+    else {
       throw new Error(`Failed to upload file, there's no file to upload`);
     }
 
@@ -200,6 +200,39 @@ export const showPropertiesByUser: RequestHandler = async (req, res, next) => {
 
     // Enviar las propiedades con sus medios
     res.status(200).json(propertiesWithMedia);
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const showAvailableProperties: RequestHandler = async (req, res, next) => {
+  try {
+    const properties = await PropertyModel.aggregate()
+      .match({ isAvailable: true })
+      .project({ createdAt: 0, updatedAt: 0, __v: 0 }) // Retornar todo menos los timestamps y metadata de mongoose
+      .lookup({ from: "propertymedias", localField: "_id", foreignField: "propertyId", as: "propertyMedia" }) // Se usa el nombre de la colección en la base de datos
+      .addFields({
+        // Eliminar campos no deseados de cada propertyMedia
+        propertyMedia: {
+          $map: {
+            input: "$propertyMedia",
+            as: "media",
+            in: {
+              mediaUrl: "$$media.mediaUrl",
+              mediaType: "$$media.mediaType",
+              description: "$$media.description",
+              uploadDate: "$$media.uploadDate",
+            },
+          },
+        },
+      })
+      .sort({ createdAt: -1 })
+      .exec();
+
+    if (!properties || properties.length === 0) {
+      throw createHttpError(404, "No properties found");
+    }
+    res.status(200).json(properties);
   } catch (error) {
     next(error);
   }

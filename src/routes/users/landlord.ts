@@ -5,6 +5,7 @@ import {
   deleteLandlord,
   showLandlord,
   showLandlords,
+  getActiveTenantsByLandlord,
 } from "../../controllers/users/landlord";
 
 const LandlordRouter = express.Router();
@@ -139,6 +140,28 @@ LandlordRouter.patch("/:id", updateLandlord);
  *         description: No se encontró el arrendador
  */
 LandlordRouter.delete("/:id", deleteLandlord);
+
+/**
+ * @swagger
+ * /api/landlord/{id}/tenants/active:
+ *   get:
+ *     tags:
+ *       - Landlords
+ *     summary: Obtener los inquilinos activos de un arrendador por su ID
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: ID del arrendador
+ *     responses:
+ *       '200':
+ *         description: Lista de inquilinos activos
+ *       '404':
+ *         description: No se encontraron inquilinos activos
+ */
+LandlordRouter.get("/:id/tenants/active", getActiveTenantsByLandlord);
 
 export default LandlordRouter;
 

@@ -1,4 +1,4 @@
-import { InferSchemaType, model, Schema} from 'mongoose';
+import { InferSchemaType, model, Schema } from 'mongoose';
 
 const Notification = new Schema({
     // inquilino_id - FK
@@ -29,12 +29,12 @@ const Notification = new Schema({
     // estado - definir cuáles son los códigos de estado para determinar la longitud
     status: {
         type: Number,
-        required: [true, 'El estado de la notificación es obligatorio'],       
+        required: [true, 'El estado de la notificación es obligatorio'],
         default: 0,
         min: [0, 'El código de estado debe ser un número positivo'],
     },
-     // fecha_envio
-     sentDate: {
+    // fecha_envio
+    sentDate: {
         type: Date,
         required: [true, 'La fecha de envío es obligatoria'],
     },
@@ -42,18 +42,12 @@ const Notification = new Schema({
     readDate: {
         type: Date,
     },
-    createdAt: {
-        type: Date,
-        default: Date.now,
-    },
-    updatedAt: {
-        type: Date,
-        default: Date.now,
-    },
-});
+},
+    { timestamps: true }
+);
 type NotificationType = InferSchemaType<typeof Notification>
 // Crear el modelo a partir del esquema
 export const NotificationModel = model<NotificationType>(
-  'notification',
-  Notification
+    'notification',
+    Notification
 );

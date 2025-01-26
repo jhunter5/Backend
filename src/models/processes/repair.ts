@@ -1,4 +1,4 @@
-import { InferSchemaType, model, Schema} from 'mongoose';
+import { InferSchemaType, model, Schema } from 'mongoose';
 
 // reparación
 const Repair = new Schema({
@@ -17,7 +17,7 @@ const Repair = new Schema({
     // prioridad - códigos de la prioridad?
     priority: {
         type: Number,
-        required: [true, 'La prioridad de la reparación es obligatoria'],        
+        required: [true, 'La prioridad de la reparación es obligatoria'],
         default: 0,
         min: [0, 'El código de prioridad debe ser un número positivo'],
     },
@@ -26,10 +26,10 @@ const Repair = new Schema({
         type: Number,
         required: [true, 'El estado de la reparación es obligatorio'],
         default: 0,
-        min: [0, 'El código de estado debe ser un número positivo'],   
+        min: [0, 'El código de estado debe ser un número positivo'],
     },
-     // fecha_reporte
-     reportDate: {
+    // fecha_reporte
+    reportDate: {
         type: Date,
         required: [true, 'La fecha de reporte es obligatoria'],
     },
@@ -42,18 +42,12 @@ const Repair = new Schema({
         type: Number,
         min: [0, 'El costo de la reparación debe ser un número positivo'],
     },
-    createdAt: {
-        type: Date,
-        default: Date.now,
-    },
-    updatedAt: {
-        type: Date,
-        default: Date.now,
-    },
-});
+},
+    { timestamps: true }
+);
 type RepairType = InferSchemaType<typeof Repair>
 // Crear el modelo a partir del esquema
 export const RepairModel = model<RepairType>(
-  'repair',
-  Repair
+    'repair',
+    Repair
 );
