@@ -23,18 +23,16 @@ const User = new Schema({
     type: String,
     required: true,
     lowercase: true,
-    unique:true,
+    unique: true,
     match: [
       /^\w+([.-]?\w+)*@\w+([.-]?\w+)*(\.\w{2,3})+$/,
       'Por favor, ingrese un correo válido',
     ],
   },
-  createdAt: {
-    type: Date,
-    default: Date.now,
-  },
-});
-type UserType=InferSchemaType<typeof User>
+},
+  { timestamps: true }
+);
+type UserType = InferSchemaType<typeof User>
 // Crear el modelo a partir del esquema
 export const UserModel = model<UserType>(
   "user",

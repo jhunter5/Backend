@@ -1,4 +1,4 @@
-import { InferSchemaType, model, Schema} from 'mongoose';
+import { InferSchemaType, model, Schema } from 'mongoose';
 
 // pago
 const Payment = new Schema({
@@ -30,31 +30,25 @@ const Payment = new Schema({
         type: Number,
         required: [true, 'El estado del pago es obligatorio'],
         default: 0,
-        min: [0, 'El estado del pago debe ser un número positivo'],       
+        min: [0, 'El estado del pago debe ser un número positivo'],
     },
     // metodo_pago - definir cuáles son los códigos de estado para determinar la longitud
     paymentMethod: {
         type: Number,
         required: [true, 'El método de pago es obligatorio'],
         default: 0,
-        min: [0, 'El estado del pago debe ser un número positivo'],         
+        min: [0, 'El estado del pago debe ser un número positivo'],
     },
     // comprobante
     receipt: {
-        type: String,      
+        type: String,
     },
-    createdAt: {
-        type: Date,
-        default: Date.now,
-    },
-    updatedAt: {
-        type: Date,
-        default: Date.now,
-    },
-});
+},
+    { timestamps: true }
+);
 type PaymentType = InferSchemaType<typeof Payment>
 // Crear el modelo a partir del esquema
 export const PaymentModel = model<PaymentType>(
-  "payment",
-  Payment
+    "payment",
+    Payment
 );

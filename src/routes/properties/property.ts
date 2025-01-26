@@ -6,6 +6,7 @@ import {
   showProperties,
   showPropertiesByUser,
   updateProperty,
+  showAvailableProperties,
 } from "../../controllers/properties/property";
 
 const PropertyRouter = express.Router();
@@ -55,6 +56,7 @@ const PropertyRouter = express.Router();
  */
 PropertyRouter.post("/", createProperty);
 PropertyRouter.get("/", showProperties);
+PropertyRouter.get("/available", showAvailableProperties);
 
 /**
  * @swagger
@@ -149,7 +151,6 @@ PropertyRouter.delete("/:id", deleteProperty);
 PropertyRouter.get("/:id", showProperty);
 
 export default PropertyRouter;
-
 /**
  * @swagger
  * components:
@@ -157,36 +158,53 @@ export default PropertyRouter;
  *     Property:
  *       type: object
  *       properties:
+ *         landlordAuthID:
+ *           type: string
+ *           description: El ID de autenticación del arrendatario (authID), referencia al modelo landlord.
  *         address:
  *           type: string
+ *           description: Dirección de la propiedad.
  *         city:
  *           type: string
+ *           description: Ciudad donde se encuentra la propiedad.
  *         state:
  *           type: string
+ *           description: Departamento donde se encuentra la propiedad.
  *         type:
  *           type: string
+ *           description: Tipo de propiedad (e.g., apartamento, casa, etc.).
  *         rooms:
  *           type: integer
+ *           description: Número de habitaciones.
  *         parking:
  *           type: integer
+ *           description: Número de espacios de parqueadero.
  *         squareMeters:
  *           type: number
+ *           description: Metros cuadrados de la propiedad.
  *         tier:
  *           type: integer
+ *           description: Estrato de la propiedad (entre 0 y 6).
  *         bathrooms:
  *           type: integer
+ *           description: Número de baños.
  *         age:
  *           type: integer
+ *           description: Antigüedad de la propiedad en años.
  *         floors:
  *           type: integer
+ *           description: Número de pisos de la propiedad.
  *         description:
  *           type: string
+ *           description: Descripción detallada de la propiedad.
  *         createdAt:
  *           type: string
  *           format: date-time
+ *           description: Fecha de creación del registro.
  *         updatedAt:
  *           type: string
  *           format: date-time
+ *           description: Fecha de la última actualización del registro.
  *     PropertyWithMedia:
  *       allOf:
  *         - $ref: '#/components/schemas/Property'
@@ -194,18 +212,23 @@ export default PropertyRouter;
  *           properties:
  *             media:
  *               type: array
+ *               description: Lista de medios asociados a la propiedad.
  *               items:
  *                 type: object
  *                 properties:
  *                   mediaType:
  *                     type: string
+ *                     description: Tipo de archivo multimedia (e.g., imagen, video).
  *                   mediaUrl:
  *                     type: string
+ *                     description: URL del archivo multimedia.
  *                   description:
  *                     type: string
+ *                     description: Descripción del archivo multimedia.
  *                   uploadDate:
  *                     type: string
  *                     format: date-time
+ *                     description: Fecha de subida del archivo multimedia.
  *     PropertyWithMediaAndContract:
  *       allOf:
  *         - $ref: '#/components/schemas/PropertyWithMedia'
@@ -213,23 +236,29 @@ export default PropertyRouter;
  *           properties:
  *             contract:
  *               type: object
+ *               description: Información del contrato asociado a la propiedad.
  *               properties:
  *                 tenant:
  *                   type: object
  *                   properties:
  *                     name:
  *                       type: string
+ *                       description: Nombre del inquilino.
  *                     email:
  *                       type: string
+ *                       description: Correo electrónico del inquilino.
  *                 startDate:
  *                   type: string
  *                   format: date-time
+ *                   description: Fecha de inicio del contrato.
  *                 endDate:
  *                   type: string
  *                   format: date-time
+ *                   description: Fecha de finalización del contrato.
  *                 monthlyRent:
  *                   type: number
+ *                   description: Monto del alquiler mensual.
  *                 status:
  *                   type: string
- *       
-*/
+ *                   description: Estado del contrato (e.g., activo, finalizado).
+ */
