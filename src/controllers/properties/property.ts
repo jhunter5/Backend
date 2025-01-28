@@ -4,6 +4,7 @@ import { PropertyModel } from "../../models/properties/property";
 import { PropertyMediaModel } from "../../models/properties/propertyMedia";
 import { uploadFileS3 } from "../../utils/S3";
 import { ContractModel } from "../../models/contract/contract";
+import { applyQueryFilters } from "../../utils/mongoQueryUtils";
 
 export const createProperty: RequestHandler = async (req, res, next) => {
   const {
@@ -206,9 +207,13 @@ export const showPropertiesByUser: RequestHandler = async (req, res, next) => {
 };
 
 export const showAvailableProperties: RequestHandler = async (req, res, next) => {
+  const regexFields = ["address", "city", "state", "type", "description"];
+  const exactFields = ["rooms", "parking", "squareMeters", "tier", "bathrooms", "age", "floors", "isAvailable"];
+  const filter = applyQueryFilters(req.body, regexFields, exactFields);
+
   try {
     const properties = await PropertyModel.aggregate()
-      .match({ isAvailable: true })
+      .match({ ...filter })
       .project({ createdAt: 0, updatedAt: 0, __v: 0 }) // Retornar todo menos los timestamps y metadata de mongoose
       .lookup({ from: "propertymedias", localField: "_id", foreignField: "propertyId", as: "propertyMedia" }) // Se usa el nombre de la colección en la base de datos
       .addFields({
