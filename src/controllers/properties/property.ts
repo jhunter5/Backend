@@ -4,7 +4,7 @@ import { PropertyModel } from "../../models/properties/property";
 import { PropertyMediaModel } from "../../models/properties/propertyMedia";
 import { uploadFileS3 } from "../../utils/S3";
 import { ContractModel } from "../../models/contract/contract";
-import { applyQueryFilters } from "../../utils/mongoQueryUtils";
+import { addFiltersToQuery, filterResponseByRegex, getObjectsByIds } from "../../utils/mongoQueryUtils";
 
 export const createProperty: RequestHandler = async (req, res, next) => {
   const {
@@ -209,7 +209,7 @@ export const showPropertiesByUser: RequestHandler = async (req, res, next) => {
 export const showAvailableProperties: RequestHandler = async (req, res, next) => {
   const regexFields = ["address", "city", "state", "type", "description"];
   const exactFields = ["rooms", "parking", "squareMeters", "tier", "bathrooms", "age", "floors", "isAvailable"];
-  const filter = applyQueryFilters(req.body, regexFields, exactFields);
+  const filter = addFiltersToQuery(req.body, exactFields);
 
   try {
     const properties = await PropertyModel.aggregate()
@@ -234,10 +234,15 @@ export const showAvailableProperties: RequestHandler = async (req, res, next) =>
       .sort({ createdAt: -1 })
       .exec();
 
-    if (!properties || properties.length === 0) {
+    // Se obtienen los IDs de las propiedades que cumplen con los filtros y se usara una función distinta
+    // para que las normalizaciones aplicadas a los campos de texto no afecten los resultados de la búsqueda
+    const filteredPropertiesIds = filterResponseByRegex(properties, regexFields, req.body);
+    const filteredProperties = getObjectsByIds(properties, filteredPropertiesIds);
+    if (!filteredProperties || filteredProperties.length === 0) {
       throw createHttpError(404, "No properties found");
     }
-    res.status(200).json(properties);
+
+    res.status(200).json(filteredProperties);
   } catch (error) {
     next(error);
   }
