@@ -185,8 +185,7 @@ export const getActiveTenantsByLandlord: RequestHandler = async (req, res, next)
     const tenants = await LandlordModel.aggregate().match({ authID: id })
       .lookup({ from: "properties", localField: "authID", foreignField: "landlordAuthID", as: "properties" })
       .unwind("$properties")
-      .addFields({ "properties.id": { $toString: "$properties._id" } }) // Convertir a cadena para que la comparación sea con los mismos tipos
-      .lookup({ from: "contracts", localField: "properties.id", foreignField: "propertyId", as: "contracts" })
+      .lookup({ from: "contracts", localField: "properties._id", foreignField: "propertyId", as: "contracts" })
       .addFields({
         // Filtrar solo los contratos activos
         contracts: {
