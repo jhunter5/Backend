@@ -1,5 +1,6 @@
 import express from "express";
 import {
+  getAllContracts,
   getContractById,
   getContractsByUser,
   getContractsByProperty,
@@ -16,6 +17,28 @@ const ContractRouter = express.Router();
  *   - name: Contracts
  *     description: Operaciones relacionadas con contratos
  */
+
+
+/**
+ * @swagger
+ * /api/contracts:
+ *   get:
+ *     tags:
+ *       - Contracts
+ *     summary: Obtener todos los contratos
+ *     responses:
+ *       '200':
+ *         description: Lista de contratos
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Contract'
+ *       '404':
+ *         description: No se encontraron contratos
+ */
+
+ContractRouter.get("/", getAllContracts);
+
 
 /**
  * @swagger

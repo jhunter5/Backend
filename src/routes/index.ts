@@ -1,6 +1,6 @@
 import express from "express";
 import UserRouter from "./users/user";
-
+import ContractRouter from "./contract/contract";
 import TenantRouter from "./users/tenant";
 import PropertyRouter from  "./properties/property";
 import PropertyMediaRouter from  "./properties/propertyMedia";
@@ -27,4 +27,5 @@ router.use("/review", ReviewRouter);
 router.use("/auth", AuthRouter);
 router.use("/tenant-preferences", TenantPreferenceRouter);
 router.use("/landlord-preferences", TenantPreferenceRouter);
+router.use("/contracts", ContractRouter);
 export default router;
