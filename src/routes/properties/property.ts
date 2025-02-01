@@ -56,7 +56,7 @@ const PropertyRouter = express.Router();
  */
 PropertyRouter.post("/", createProperty);
 PropertyRouter.get("/", showProperties);
-PropertyRouter.get("/available", showAvailableProperties);
+PropertyRouter.post("/available", showAvailableProperties);
 
 /**
  * @swagger
