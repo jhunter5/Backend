@@ -14,11 +14,6 @@ const Application = new Schema({
         ref: 'tenant',
         required: [true, 'El id del inquilino es obligatorio'],
     },
-    // fecha_postulación
-    applicationDate: {
-        type: Date,
-        required: [true, 'La fecha de envío es obligatoria'],
-    },
     // estado - definir cuáles son los códigos de estado para determinar la longitud
     status: {
         type: Number,
