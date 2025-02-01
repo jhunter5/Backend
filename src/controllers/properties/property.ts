@@ -5,6 +5,8 @@ import { PropertyMediaModel } from "../../models/properties/propertyMedia";
 import { uploadFileS3 } from "../../utils/S3";
 import { ContractModel } from "../../models/contract/contract";
 import { addFiltersToQuery, filterResponseByRegex, getObjectsByIds } from "../../utils/mongoQueryUtils";
+import { Types } from "mongoose";
+
 
 export const createProperty: RequestHandler = async (req, res, next) => {
   const {
@@ -23,7 +25,6 @@ export const createProperty: RequestHandler = async (req, res, next) => {
     landlordAuthID,
   } = req.body;
   const files = req.files?.files; // Array de archivos multimedia
-  console.log(files)
   try {
     // Crear la propiedad
     const newProperty = await PropertyModel.create({
@@ -135,6 +136,7 @@ export const deleteProperty: RequestHandler = async (req, res, next) => {
 export const showProperty: RequestHandler = async (req, res, next) => {
   try {
     const { id } = req.params;
+    const propertyObjectId = new Types.ObjectId(id);
 
     // Buscar la propiedad por ID
     const property = await PropertyModel.findById(id).exec();
@@ -142,13 +144,12 @@ export const showProperty: RequestHandler = async (req, res, next) => {
       throw createHttpError(404, `Property with ID ${id} not found`);
     }
 
-    console.log(id)
     // Buscar los medios asociados a la propiedad
     const media = await PropertyMediaModel.find({ property: id }).exec();
 
     // Buscar el contrato asociado a la propiedad
-    const contract = await ContractModel.findOne({ property: id })
-      .populate("tenant", "name email") // Poblar datos del inquilino si es necesario
+    const contract = await ContractModel.findOne({ propertyId: propertyObjectId, status: "active" })
+      .populate("tenant", "firstName email authID") 
       .exec();
 
     // Enviar la propiedad con sus medios y contrato
@@ -186,14 +187,17 @@ export const showPropertiesByUser: RequestHandler = async (req, res, next) => {
     // Mapear propiedades con sus respectivos medios
     const propertiesWithMedia = await Promise.all(
       properties.map(async (property) => {
+        const propertyObjectId = new Types.ObjectId(property._id);
+
         const media = await PropertyMediaModel.find({
           property: property._id,
         }).exec();
+
         const contract = await ContractModel.findOne({
-          property: property._id,
+          propertyId: propertyObjectId,
+          status: "active",
         })
-          .populate("tenant", "name email") // Poblar datos del inquilino si es necesario
-          .exec();
+        .exec();
 
         return { ...property.toObject(), media, contract };
       })

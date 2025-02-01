@@ -121,10 +121,10 @@ const Tenant = new Schema({
     },
     // clasificación - preguntar por diferencia a Juan con la calificacion_promedio
     rating: {
-        type: Number,
-        default: 0,
-        min: [0, 'La clasificación mínima debe ser 0'],
-        max: [10, 'La clasificación máxima debe ser 10'],
+        type: String,
+        default: "N/A", // Valor predeterminado para datos nuevos
+        enum: ["A+", "A", "B", "C", "D", "E", "F", "N/A"], // Opciones válidas
+        required: [true, "La calificación es obligatoria"],
     },
     // es_familia
     isFamily: {
