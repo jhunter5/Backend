@@ -107,8 +107,11 @@ export const showAllThisYearAppointmentsByLandlord: RequestHandler = async (req,
 
         const appointmentsWithDetails = await Promise.all(
             appointments.map(async (appointment) => {
-                const landlord = await LandlordModel.findById(appointment.landLordAuthID);
-                const tenant = await TenantModel.findById(appointment.tenantAuthID);
+                const propertyLandlordAuthIdObject = new Types.ObjectId(appointment.landLordAuthID);
+                const propertyTenantAuthIdObject = new Types.ObjectId(appointment.tenantAuthID);
+
+                const landlord = await LandlordModel.find({authID:  propertyLandlordAuthIdObject});
+                const tenant = await TenantModel.find({authID: propertyTenantAuthIdObject}); 
                 const property = await PropertyModel.findById(appointment.propertyID);
                 return {
                     ...appointment.toObject(),
@@ -141,8 +144,11 @@ export const showAllThisYearAppointmentsByTenant: RequestHandler = async (req, r
 
         const appointmentsWithDetails = await Promise.all(
             appointments.map(async (appointment) => {
-                const landlord = await LandlordModel.findById(appointment.landLordAuthID);
-                const tenant = await TenantModel.findById(appointment.tenantAuthID);
+                const propertyLandlordAuthIdObject = new Types.ObjectId(appointment.landLordAuthID);
+                const propertyTenantAuthIdObject = new Types.ObjectId(appointment.tenantAuthID);
+                
+                const landlord = await LandlordModel.find({authID: propertyLandlordAuthIdObject});
+                const tenant = await TenantModel.find({authID: propertyTenantAuthIdObject});
                 const property = await PropertyModel.findById(appointment.propertyID);
                 return {
                     ...appointment.toObject(),
