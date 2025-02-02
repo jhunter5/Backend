@@ -19,16 +19,16 @@ export const createAppointment: RequestHandler = async (req, res, next) => {
         }
     
         // Verificar que el arrendatario existe
-        // const tenant = await TenantModel.findById(tenantAuthID);
-        // if (!tenant) {
-        // throw createHttpError(404, "El arrendatario no existe");
-        // }
+        const tenant = await TenantModel.findById(tenantAuthID);
+        if (!tenant) {
+        throw createHttpError(404, "El arrendatario no existe");
+        }
     
         // // Verificar que la propiedad existe
-        // const property = await PropertyModel.findById(propertyID);
-        // if (!property) {
-        // throw createHttpError(404, "La propiedad no existe");
-        // }
+        const property = await PropertyModel.findById(propertyID);
+        if (!property) {
+        throw createHttpError(404, "La propiedad no existe");
+        }
     
         // Crear la cita
         const newAppointment = await AppointmentModel.create({
@@ -104,8 +104,23 @@ export const showAllThisYearAppointmentsByLandlord: RequestHandler = async (req,
             $lt: new Date(new Date().getFullYear(), 11, 31),
         },
         });
-        console.log(appointments);
-        res.json(appointments);
+
+        const appointmentsWithDetails = await Promise.all(
+            appointments.map(async (appointment) => {
+                const landlord = await LandlordModel.findById(appointment.landLordAuthID);
+                const tenant = await TenantModel.findById(appointment.tenantAuthID);
+                const property = await PropertyModel.findById(appointment.propertyID);
+                return {
+                    ...appointment.toObject(),
+                    landlord,
+                    tenant,
+                    property,
+                };
+            })
+        );
+
+        res.json(appointmentsWithDetails);
+        
     } catch (error) {
         next(error);
     }
@@ -123,7 +138,22 @@ export const showAllThisYearAppointmentsByTenant: RequestHandler = async (req, r
             $lt: new Date(new Date().getFullYear(), 11, 31),
         },
         });
-        res.json(appointments);
+
+        const appointmentsWithDetails = await Promise.all(
+            appointments.map(async (appointment) => {
+                const landlord = await LandlordModel.findById(appointment.landLordAuthID);
+                const tenant = await TenantModel.findById(appointment.tenantAuthID);
+                const property = await PropertyModel.findById(appointment.propertyID);
+                return {
+                    ...appointment.toObject(),
+                    landlord,
+                    tenant,
+                    property,
+                };
+            })
+        );
+
+        res.json(appointmentsWithDetails);
     } catch (error) {
         next(error);
     }
