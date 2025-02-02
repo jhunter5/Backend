@@ -7,6 +7,7 @@ import {
   showPropertiesByUser,
   updateProperty,
   showAvailableProperties,
+  showAvailablePropertiesWithoutFilters
 } from "../../controllers/properties/property";
 
 const PropertyRouter = express.Router();
@@ -56,7 +57,192 @@ const PropertyRouter = express.Router();
  */
 PropertyRouter.post("/", createProperty);
 PropertyRouter.get("/", showProperties);
+
+/**
+ * @swagger
+ * /api/property/available:
+ *   post:
+ *     summary: Obtiene propiedades disponibles con filtros personalizados
+ *     tags:
+ *       - Properties
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               address:
+ *                 type: string
+ *                 description: Dirección parcial o completa (búsqueda con regex)
+ *               city:
+ *                 type: string
+ *                 description: Ciudad de la propiedad (búsqueda con regex)
+ *               state:
+ *                 type: string
+ *                 description: Estado o departamento (búsqueda con regex)
+ *               type:
+ *                 type: string
+ *                 
+ *               rooms:
+ *                 type: integer
+ *                 description: Número de habitaciones (búsqueda exacta)
+ *               parking:
+ *                 type: integer
+ *                 description: Número de parqueaderos
+ *               squareMeters:
+ *                 type: integer
+ *                 description: Área en metros cuadrados
+ *               tier:
+ *                 type: integer
+ *                 description: Nivel socioeconómico
+ *               bathrooms:
+ *                 type: integer
+ *                 description: Número de baños
+ *               age:
+ *                 type: integer
+ *                 description: Antigüedad de la propiedad en años
+ *               floors:
+ *                 type: integer
+ *                 description: Número de pisos
+ *               isAvailable:
+ *                 type: boolean
+ *                 description: Indica si la propiedad está disponible
+ *     responses:
+ *       200:
+ *         description: Lista de propiedades filtradas
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 type: object
+ *                 properties:
+ *                   _id:
+ *                     type: string
+ *                     description: ID de la propiedad
+ *                   address:
+ *                     type: string
+ *                     description: Dirección de la propiedad
+ *                   city:
+ *                     type: string
+ *                     description: Ciudad de la propiedad
+ *                   state:
+ *                     type: string
+ *                     description: Estado o departamento
+ *                   type:
+ *                     type: string
+ *                     description: Tipo de propiedad
+ *                   rooms:
+ *                     type: integer
+ *                   parking:
+ *                     type: integer
+ *                   squareMeters:
+ *                     type: integer
+ *                   tier:
+ *                     type: integer
+ *                   bathrooms:
+ *                     type: integer
+ *                   age:
+ *                     type: integer
+ *                   floors:
+ *                     type: integer
+ *                   isAvailable:
+ *                     type: boolean
+ *                   propertyMedia:
+ *                     type: array
+ *                     items:
+ *                       type: object
+ *                       properties:
+ *                         mediaUrl:
+ *                           type: string
+ *                           description: URL de la imagen o video
+ *                         mediaType:
+ *                           type: string
+ *                           description: Tipo de media (imagen/video)
+ *                         description:
+ *                           type: string
+ *                           description: Descripción del archivo
+ *                         uploadDate:
+ *                           type: string
+ *                           format: date-time
+ *       404:
+ *         description: No se encontraron propiedades
+ *       500:
+ *         description: Error interno del servidor
+ */
 PropertyRouter.post("/available", showAvailableProperties);
+
+
+/**
+ * @swagger
+ * /api/property/available/no-filters:
+ *   get:
+ *     summary: Obtiene todas las propiedades disponibles sin aplicar filtros
+ *     tags:
+ *       - Properties
+ *     responses:
+ *       200:
+ *         description: Lista de propiedades disponibles con sus medios asociados
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 type: object
+ *                 properties:
+ *                   _id:
+ *                     type: string
+ *                     description: ID de la propiedad
+ *                   address:
+ *                     type: string
+ *                     description: Dirección de la propiedad
+ *                   city:
+ *                     type: string
+ *                   state:
+ *                     type: string
+ *                   type:
+ *                     type: string
+ *                   rooms:
+ *                     type: integer
+ *                   parking:
+ *                     type: integer
+ *                   squareMeters:
+ *                     type: integer
+ *                   tier:
+ *                     type: integer
+ *                   bathrooms:
+ *                     type: integer
+ *                   age:
+ *                     type: integer
+ *                   floors:
+ *                     type: integer
+ *                   isAvailable:
+ *                     type: boolean
+ *                     description: Indica si la propiedad está disponible
+ *                   media:
+ *                     type: array
+ *                     items:
+ *                       type: object
+ *                       properties:
+ *                         mediaUrl:
+ *                           type: string
+ *                           description: URL de la imagen o video
+ *                         mediaType:
+ *                           type: string
+ *                           description: Tipo de media (imagen/video)
+ *                         description:
+ *                           type: string
+ *                         uploadDate:
+ *                           type: string
+ *                           format: date-time
+ *       404:
+ *         description: No se encontraron propiedades
+ *       500:
+ *         description: Error interno del servidor
+ */
+
+PropertyRouter.get("/available/no-filters", showAvailablePropertiesWithoutFilters);
 
 /**
  * @swagger
