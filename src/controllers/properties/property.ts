@@ -161,6 +161,7 @@ export const showProperty: RequestHandler = async (req, res, next) => {
 
 export const showProperties: RequestHandler = async (req, res, next) => {
   try {
+    console.log("Fetching properties");
     const properties = await PropertyModel.find().exec();
     if (!properties || properties.length === 0) {
       throw createHttpError(404, "No properties found");
@@ -168,6 +169,7 @@ export const showProperties: RequestHandler = async (req, res, next) => {
 
     res.status(200).json(properties);
   } catch (error) {
+    console.error(error);
     next(error);
   }
 };
@@ -251,3 +253,27 @@ export const showAvailableProperties: RequestHandler = async (req, res, next) =>
     next(error);
   }
 };
+
+export const showAvailablePropertiesWithoutFilters: RequestHandler = async (req, res, next) => {
+  try {
+    const properties = await PropertyModel.find({ isAvailable: true }).exec();
+    if (!properties || properties.length === 0) {
+      throw createHttpError(404, "No properties found");
+    }
+
+    const propertiesWithMedia = await Promise.all(
+      properties.map(async (property) => {
+
+        const media = await PropertyMediaModel.find({
+          property: property._id,
+        }).exec();
+
+        return { ...property.toObject(), media };
+      })
+    );
+
+    res.status(200).json(propertiesWithMedia);
+  } catch (error) {
+    next(error);
+  }
+}
