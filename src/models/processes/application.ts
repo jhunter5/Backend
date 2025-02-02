@@ -1,4 +1,4 @@
-import { InferSchemaType, model, Schema} from 'mongoose';
+import { InferSchemaType, model, Schema } from 'mongoose';
 
 // postulación
 const Application = new Schema({
@@ -23,8 +23,8 @@ const Application = new Schema({
     status: {
         type: Number,
         required: [true, 'El estado de la aplicación es obligatoria'],
-        default: 0, 
-        min: [0, 'El código de estado debe ser un número positivo'],      
+        default: 0,
+        min: [0, 'El código de estado debe ser un número positivo'],
     },
     // calificación
     score: {
@@ -33,18 +33,12 @@ const Application = new Schema({
         min: [0, 'La calificación mínima debe ser 0'],
         max: [10, 'La calificación máxima debe ser 10'],
     },
-    createdAt: {
-        type: Date,
-        default: Date.now,
-    },
-    updatedAt: {
-        type: Date,
-        default: Date.now,
-    },
-});
+},
+    { timestamps: true }
+);
 type ApplicationType = InferSchemaType<typeof Application>
 // Crear el modelo a partir del esquema
 export const ApplicationModel = model<ApplicationType>(
-  'application',
-  Application
+    'application',
+    Application
 );

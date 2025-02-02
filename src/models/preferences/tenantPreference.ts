@@ -1,4 +1,4 @@
-import { InferSchemaType, model, Schema} from 'mongoose';
+import { InferSchemaType, model, Schema } from 'mongoose';
 
 // preferencia_arrendatario
 const TenantPreference = new Schema({
@@ -20,18 +20,12 @@ const TenantPreference = new Schema({
         type: String,
         required: [true, 'El valor de la preferencia es obligatoria'],
     },
-    createdAt: {
-        type: Date,
-        default: Date.now,
-    },
-    updatedAt: {
-        type: Date,
-        default: Date.now,
-    },
-});
+},
+    { timestamps: true }
+);
 type TenantPreferenceType = InferSchemaType<typeof TenantPreference>
 // Crear el modelo a partir del esquema
 export const TenantPreferenceModel = model<TenantPreferenceType>(
-  "tenantpreference",
-  TenantPreference
+    "tenantpreference",
+    TenantPreference
 );

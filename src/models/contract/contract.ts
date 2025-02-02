@@ -1,4 +1,4 @@
-import { InferSchemaType, model, Schema} from 'mongoose';
+import { InferSchemaType, model, Schema } from 'mongoose';
 
 const Contract = new Schema({
     // propiedad_id - FK
@@ -32,7 +32,7 @@ const Contract = new Schema({
     // estado - definir cuáles son los códigos de estado para determinar la longitud
     status: {
         type: String,
-        required: [true, 'El estado del contrato es obligatorio'],       
+        required: [true, 'El estado del contrato es obligatorio'],
     },
     // duracion (months)
     duration: {
@@ -40,18 +40,12 @@ const Contract = new Schema({
         required: [true, 'La duración del contrato es obligatoria'],
         min: [0, 'La duración del contrato debe ser un número positivo'],
     },
-    createdAt: {
-        type: Date,
-        default: Date.now,
-    },
-    updatedAt: {
-        type: Date,
-        default: Date.now,
-    },
-});
+},
+    { timestamps: true }
+);
 type ContractType = InferSchemaType<typeof Contract>
 // Crear el modelo a partir del esquema
 export const ContractModel = model<ContractType>(
-  "contract",
-  Contract
+    "contract",
+    Contract
 );

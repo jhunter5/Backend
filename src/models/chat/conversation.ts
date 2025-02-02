@@ -1,7 +1,7 @@
-import { InferSchemaType, model, Schema} from 'mongoose';
+import { InferSchemaType, model, Schema } from 'mongoose';
 
 // conversación
-const Conversation = new Schema({   
+const Conversation = new Schema({
     // inquilino_id - FK
     tenant: {
         type: Schema.Types.ObjectId,
@@ -19,18 +19,12 @@ const Conversation = new Schema({
         type: Date,
         required: [true, 'La fecha de inicio es obligatoria'],
     },
-    createdAt: {
-        type: Date,
-        default: Date.now,
-    },
-    updatedAt: {
-        type: Date,
-        default: Date.now,
-    },
-});
+},
+    { timestamps: true }
+);
 type ConversationType = InferSchemaType<typeof Conversation>
 // Crear el modelo a partir del esquema
 export const ConversationModel = model<ConversationType>(
-  "conversation",
-  Conversation
+    "conversation",
+    Conversation
 );

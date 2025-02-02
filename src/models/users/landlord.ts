@@ -15,7 +15,7 @@ const Landlord = new Schema({
     required: [true, "El id de autenticación es obligatorio"],
     unique: true, // Asegúrate de que sea único
     index: true, // Facilita las búsquedas por este campo
-},
+  },
   firstName: {
     type: String,
     required: [true, "El nombre es obligatorio"],
@@ -32,10 +32,10 @@ const Landlord = new Schema({
     type: String,
     required: [true, 'El genero es obligatorio'],
     match: [
-        /^(Masculino|Femenino)$/,
-        'Por favor, ingrese un correo electrónico válido',
-      ],
-},
+      /^(Masculino|Femenino)$/,
+      'Por favor, ingrese un correo electrónico válido',
+    ],
+  },
   phone: {
     type: String,
     required: [true, "El número de teléfono es obligatorio"],
@@ -64,15 +64,9 @@ const Landlord = new Schema({
     min: [0, "La calificación mínima del arrendatario es 0"],
     max: [10, "La calificación máxima del arrendatario es 10"],
   },
-  createdAt: {
-    type: Date,
-    default: Date.now,
-  },
-  updatedAt: {
-    type: Date,
-    default: Date.now,
-  },
-});
+},
+  { timestamps: true }
+);
 type LandlordType = InferSchemaType<typeof Landlord>;
 // Crear el modelo a partir del esquema
 export const LandlordModel = model<LandlordType>("landlord", Landlord);

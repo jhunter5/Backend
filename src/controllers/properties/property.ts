@@ -4,6 +4,9 @@ import { PropertyModel } from "../../models/properties/property";
 import { PropertyMediaModel } from "../../models/properties/propertyMedia";
 import { uploadFileS3 } from "../../utils/S3";
 import { ContractModel } from "../../models/contract/contract";
+import { addFiltersToQuery, filterResponseByRegex, getObjectsByIds } from "../../utils/mongoQueryUtils";
+import { Types } from "mongoose";
+
 
 export const createProperty: RequestHandler = async (req, res, next) => {
   const {
@@ -22,7 +25,6 @@ export const createProperty: RequestHandler = async (req, res, next) => {
     landlordAuthID,
   } = req.body;
   const files = req.files?.files; // Array de archivos multimedia
-  console.log(req.files)
   try {
     // Crear la propiedad
     const newProperty = await PropertyModel.create({
@@ -46,6 +48,7 @@ export const createProperty: RequestHandler = async (req, res, next) => {
       const mediaPromises = files.map(async (file: any) => {
         // Subir archivo a S3
         const s3Result = await uploadFileS3(file);
+        console.log(s3Result)
 
         // Crear el documento PropertyMedia con referencia a la propiedad
         return await PropertyMediaModel.create({
@@ -53,17 +56,15 @@ export const createProperty: RequestHandler = async (req, res, next) => {
           mediaType: file.mimetype,
           mediaUrl: s3Result,
           description: file.description || "",
-          uploadDate: new Date(),
-          propertyId: newProperty._id, // Asociar con la propiedad creada
+          uploadDate: new Date()
         });
       });
 
       // Esperar a que todas las promesas terminen
       await Promise.all(mediaPromises);
-    }else{
-      
+    }
+    else {
       throw new Error(`Failed to upload file, there's no file to upload`);
-
     }
 
     res.status(201).json({
@@ -135,6 +136,7 @@ export const deleteProperty: RequestHandler = async (req, res, next) => {
 export const showProperty: RequestHandler = async (req, res, next) => {
   try {
     const { id } = req.params;
+    const propertyObjectId = new Types.ObjectId(id);
 
     // Buscar la propiedad por ID
     const property = await PropertyModel.findById(id).exec();
@@ -143,11 +145,11 @@ export const showProperty: RequestHandler = async (req, res, next) => {
     }
 
     // Buscar los medios asociados a la propiedad
-    const media = await PropertyMediaModel.find({ propertyId: id }).exec();
+    const media = await PropertyMediaModel.find({ property: id }).exec();
 
     // Buscar el contrato asociado a la propiedad
-    const contract = await ContractModel.findOne({ property: id })
-      .populate("tenant", "name email") // Poblar datos del inquilino si es necesario
+    const contract = await ContractModel.findOne({ propertyId: propertyObjectId, status: "active" })
+      .populate("tenant", "firstName email authID") 
       .exec();
 
     // Enviar la propiedad con sus medios y contrato
@@ -185,14 +187,17 @@ export const showPropertiesByUser: RequestHandler = async (req, res, next) => {
     // Mapear propiedades con sus respectivos medios
     const propertiesWithMedia = await Promise.all(
       properties.map(async (property) => {
+        const propertyObjectId = new Types.ObjectId(property._id);
+
         const media = await PropertyMediaModel.find({
-          propertyId: property._id,
+          property: property._id,
         }).exec();
+
         const contract = await ContractModel.findOne({
-          propertyId: property._id,
+          propertyId: propertyObjectId,
+          status: "active",
         })
-          .populate("tenant", "name email") // Poblar datos del inquilino si es necesario
-          .exec();
+        .exec();
 
         return { ...property.toObject(), media, contract };
       })
@@ -200,6 +205,48 @@ export const showPropertiesByUser: RequestHandler = async (req, res, next) => {
 
     // Enviar las propiedades con sus medios
     res.status(200).json(propertiesWithMedia);
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const showAvailableProperties: RequestHandler = async (req, res, next) => {
+  const regexFields = ["address", "city", "state", "type", "description"];
+  const exactFields = ["rooms", "parking", "squareMeters", "tier", "bathrooms", "age", "floors", "isAvailable"];
+  const filter = addFiltersToQuery(req.body, exactFields);
+
+  try {
+    const properties = await PropertyModel.aggregate()
+      .match({ ...filter })
+      .project({ createdAt: 0, updatedAt: 0, __v: 0 }) // Retornar todo menos los timestamps y metadata de mongoose
+      .lookup({ from: "propertymedias", localField: "_id", foreignField: "propertyId", as: "propertyMedia" }) // Se usa el nombre de la colección en la base de datos
+      .addFields({
+        // Eliminar campos no deseados de cada propertyMedia
+        propertyMedia: {
+          $map: {
+            input: "$propertyMedia",
+            as: "media",
+            in: {
+              mediaUrl: "$$media.mediaUrl",
+              mediaType: "$$media.mediaType",
+              description: "$$media.description",
+              uploadDate: "$$media.uploadDate",
+            },
+          },
+        },
+      })
+      .sort({ createdAt: -1 })
+      .exec();
+
+    // Se obtienen los IDs de las propiedades que cumplen con los filtros y se usara una función distinta
+    // para que las normalizaciones aplicadas a los campos de texto no afecten los resultados de la búsqueda
+    const filteredPropertiesIds = filterResponseByRegex(properties, regexFields, req.body);
+    const filteredProperties = getObjectsByIds(properties, filteredPropertiesIds);
+    if (!filteredProperties || filteredProperties.length === 0) {
+      throw createHttpError(404, "No properties found");
+    }
+
+    res.status(200).json(filteredProperties);
   } catch (error) {
     next(error);
   }

@@ -6,6 +6,7 @@ import {
   showProperties,
   showPropertiesByUser,
   updateProperty,
+  showAvailableProperties,
 } from "../../controllers/properties/property";
 
 const PropertyRouter = express.Router();
@@ -55,6 +56,7 @@ const PropertyRouter = express.Router();
  */
 PropertyRouter.post("/", createProperty);
 PropertyRouter.get("/", showProperties);
+PropertyRouter.post("/available", showAvailableProperties);
 
 /**
  * @swagger
