@@ -2,9 +2,12 @@ import express from "express";
 import {
   createApplication,
   deleteApplication,
+  getApplicationsByTenant,
   showApplication,
   showApplications,
+  showApplicationsByProperty,
   updateApplication,
+  updateApplicationStatus,
 } from "../../controllers/processes/application";
 
 const ApplicationRouter = express.Router();
@@ -54,7 +57,9 @@ const ApplicationRouter = express.Router();
  */
 ApplicationRouter.post("/", createApplication);
 ApplicationRouter.get("/", showApplications);
-
+ApplicationRouter.get("/property/:id", showApplicationsByProperty);
+ApplicationRouter.patch("/status/:id", updateApplicationStatus);
+ApplicationRouter.get("/tenant/:id", getApplicationsByTenant);
 /**
  * @swagger
  * /api/application/{id}:
