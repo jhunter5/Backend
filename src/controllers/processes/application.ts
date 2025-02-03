@@ -10,8 +10,6 @@ export const createApplication: RequestHandler = async (req, res, next) => {
   try {
     const { applicationData, applicationMedias, applicationReferences } =
       req.body;
-    console.log(applicationData);
-    console.log(applicationReferences);
     // Crear la postulación
     const newApplication = await ApplicationModel.create(applicationData);
 
