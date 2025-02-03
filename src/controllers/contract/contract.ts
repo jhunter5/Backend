@@ -1,6 +1,7 @@
 import { RequestHandler } from "express";
 import { ContractModel } from "../../models/contract/contract";
 import createHttpError from "http-errors";
+import mongoose from "mongoose";
 import { uploadFileS3 } from "../../utils/S3";
 import { ContractDocumentModel } from "../../models/contract/contractDocument";
 import { TenantModel } from "../../models/users/tenant";
@@ -25,10 +26,9 @@ export const createContract: RequestHandler = async (req, res, next) => {
         };
       })
     );
+    
     const newDocs = await ContractDocumentModel.insertMany(docUrls);
-
-
-
+    
     // Enviar respuesta con la postulación y sus detalles asociados
     res.status(201).json({
       contract: newContract,
@@ -36,6 +36,17 @@ export const createContract: RequestHandler = async (req, res, next) => {
     });
   } catch (error) {
     console.error("Error creating application:", error);
+    next(error);
+  }
+};
+
+export const getAllContracts: RequestHandler = async (req, res, next) => {
+  try {
+    const contracts = await ContractModel.find()
+      .exec();
+
+    res.status(200).json(contracts);
+  } catch (error) {
     next(error);
   }
 };
@@ -178,22 +189,20 @@ export const getContractById: RequestHandler = async (req, res, next) => {
   };
   
 
-  export const deleteContract: RequestHandler = async (req, res, next) => {
-    try {
-      const { id } = req.params;
-  
-      const deletedContract = await ContractModel.findByIdAndDelete(id).exec();
-  
-      if (!deletedContract) {
-        throw createHttpError(404, `Contract with ID ${id} not found`);
-      }
-  
-      res.status(200).json({ message: "Contract deleted successfully" });
-    } catch (error) {
-      next(error);
+export const deleteContract: RequestHandler = async (req, res, next) => {
+  try {
+    const { id } = req.params;
+
+    const deletedContract = await ContractModel.findByIdAndDelete(id).exec();
+
+    if (!deletedContract) {
+      throw createHttpError(404, `Contract with ID ${id} not found`);
     }
-  };
-  
+    res.status(200).json({ message: "Contract deleted successfully" });
+  } catch (error) {
+    next(error);
+  }
+};
 
   export const getActiveContractsByTenant: RequestHandler = async (req, res, next) => {
     try {

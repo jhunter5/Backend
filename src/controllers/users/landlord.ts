@@ -185,30 +185,35 @@ export const getActiveTenantsByLandlord: RequestHandler = async (req, res, next)
     const tenants = await LandlordModel.aggregate().match({ authID: id })
       .lookup({ from: "properties", localField: "authID", foreignField: "landlordAuthID", as: "properties" })
       .unwind("$properties")
-      .addFields({ "properties.id": { $toString: "$properties._id" } }) // Convertir a cadena para que la comparación sea con los mismos tipos
-      .lookup({ from: "contracts", localField: "properties.id", foreignField: "propertyId", as: "contracts" })
+      .lookup({ from: "contracts", localField: "properties._id", foreignField: "propertyId", as: "contracts" })
       .addFields({
-        // Filtrar solo los contratos activos
-        contracts: {
-          $filter: {
-            input: "$contracts",
-            as: "contract",
-            cond: {
-              $and: [
-                { $lte: ["$$contract.startDate", new Date().toISOString()] },
-                { $gte: ["$$contract.endDate", new Date().toISOString()] },
-              ],
-            },
-          },
+      // Filtrar solo los contratos activos
+      contracts: {
+        $filter: {
+        input: "$contracts",
+        as: "contract",
+        cond: {
+          $and: [
+          { $lte: ["$$contract.startDate", new Date().toISOString()] },
+          { $gte: ["$$contract.endDate", new Date().toISOString()] },
+          ],
         },
+        },
+      },
       })
       .unwind("$contracts")
-      .addFields({ "contracts.tenantObjectId": { $toObjectId: "$contracts.tenant" } }) // Convertir a ObjectId para que la comparación sea con los mismos tipos
+      .addFields({ "contracts.tenantObjectId": { $toObjectId: "$contracts.tenant" } })
       .lookup({ from: "tenants", localField: "contracts.tenantObjectId", foreignField: "_id", as: "tenants" })
+      .unwind("$tenants") // Asegura que cada tenant esté en un documento separado
+      .addFields({
+        // Combinar monthlyRent directamente en el tenant
+        "tenants.monthlyRent": "$contracts.monthlyRent",
+        "tenants.currentProperty": "$properties.address",
+      })
       .group({
-        // Agrupar por ID de arrendador
-        _id: '$_id',
-        tenants: { $push: '$tenants' }
+      // Agrupar por ID de arrendador
+      _id: '$_id',
+      tenants: { $push: '$tenants'}
       })
       .exec();
 

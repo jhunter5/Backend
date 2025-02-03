@@ -89,6 +89,11 @@ const Property = new Schema({
         default: false,
         required: [true, 'El estado de disponibilidad es obligatorio'],
     },
+    rentPrice: {
+        type: Number,
+        required: false,
+        min: [0, 'El precio de arrendamiento debe ser un número positivo'],
+    },
 },
     { timestamps: true }
 );
