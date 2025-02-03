@@ -3,6 +3,7 @@ import { ContractModel } from "../../models/contract/contract";
 import createHttpError from "http-errors";
 import { uploadFileS3 } from "../../utils/S3";
 import { ContractDocumentModel } from "../../models/contract/contractDocument";
+import { TenantModel } from "../../models/users/tenant";
 
 
 export const createContract: RequestHandler = async (req, res, next) => {
@@ -46,7 +47,6 @@ export const getContractById: RequestHandler = async (req, res, next) => {
   
       const contract = await ContractModel.findById(id)
         .populate("propertyId", "address city state") // Poblar datos de la propiedad
-        .populate("tenant", "name email") // Poblar datos del inquilino
         .exec();
   
       if (!contract) {
@@ -64,16 +64,25 @@ export const getContractById: RequestHandler = async (req, res, next) => {
     try {
       const { id } = req.params;
   
-      const contract = await ContractModel.find({tenant: id})
+      // Buscar los contratos asociados al tenantAuthID
+      const contracts = await ContractModel.find({ tenantAuthID: id })
         .populate("propertyId") // Poblar datos de la propiedad
-        .populate("tenant") // Poblar datos del inquilino
-        .exec();
+        .exec(); // No intentamos poblar tenantAuthID porque no es un ObjectId
   
-      if (!contract) {
-        throw createHttpError(404, `Contract with tenant ID ${id} not found`);
+      if (!contracts || contracts.length === 0) {
+        throw createHttpError(404, `No contracts found for tenant ID ${id}`);
       }
   
-      res.status(200).json(contract);
+      // Recuperar los detalles del inquilino manualmente
+      const tenantDetails = await TenantModel.findOne({ authID: id }).exec();
+  
+      // Agregar detalles del inquilino manualmente a cada contrato
+      const contractsWithTenant = contracts.map(contract => ({
+        ...contract.toObject(),
+        tenant: tenantDetails, // Reemplaza tenantAuthID con la información completa del inquilino
+      }));
+  
+      res.status(200).json(contractsWithTenant);
     } catch (error) {
       if ((error as any).name === "ValidationError") {
         // Manejo de errores de validación de Mongoose
@@ -88,10 +97,7 @@ export const getContractById: RequestHandler = async (req, res, next) => {
         return; // Asegurarse de no continuar después de enviar una respuesta
       }
   
-      // Registrar otros errores para depuración
       console.error(error);
-  
-      // Pasar el error a otros middlewares
       next(error);
     }
   };
@@ -100,16 +106,28 @@ export const getContractById: RequestHandler = async (req, res, next) => {
     try {
       const { propertyId } = req.params;
   
-      const contract = await ContractModel.find({propertyId: propertyId})
-        .populate("propertyId", "address city state") // Poblar datos de la propiedad
-        .populate("tenant", "name email") // Poblar datos del inquilino
+      // Buscar contratos basados en el ID de la propiedad
+      const contracts = await ContractModel.find({ propertyId: propertyId })
+        .populate("propertyId") // Poblar datos de la propiedad
         .exec();
   
-      if (!contract) {
-        throw createHttpError(404, `Contract with ID ${propertyId} not found`);
+      if (!contracts.length) {
+        throw createHttpError(404, `Contracts for property with ID ${propertyId} not found`);
       }
   
-      res.status(200).json(contract);
+      // Recuperar detalles de cada inquilino de forma manual
+      const contractsDetailed = await Promise.all(contracts.map(async contract => {
+        const tenantDetails = await TenantModel.findOne({ authID: contract.tenantAuthID }).exec();
+        return {
+          ...contract.toObject(),
+          tenant: tenantDetails ? {
+            name: (tenantDetails as any).name,
+            email: tenantDetails.email
+          } : null // Solo incluir los campos necesarios
+        };
+      }));
+  
+      res.status(200).json(contractsDetailed);
     } catch (error) {
       next(error);
     }
@@ -119,9 +137,8 @@ export const getContractById: RequestHandler = async (req, res, next) => {
     try {
       const { propertyId, tenantId } = req.params;
   
-      const contract = await ContractModel.find({propertyId: propertyId, tenant:tenantId})
+      const contract = await ContractModel.find({propertyId: propertyId, tenantAuthID:tenantId})
         .populate("propertyId", "address city state") // Poblar datos de la propiedad
-        .populate("tenant", "name email") // Poblar datos del inquilino
         .exec();
   
       if (!contract) {
@@ -145,7 +162,6 @@ export const getContractById: RequestHandler = async (req, res, next) => {
         { new: true, runValidators: true } // Retorna el documento actualizado y valida los cambios
       )
         .populate("propertyId", "address city state")
-        .populate("tenant", "name email")
         .exec();
   
       if (!updatedContract) {
@@ -183,16 +199,25 @@ export const getContractById: RequestHandler = async (req, res, next) => {
     try {
       const { id } = req.params;
   
-      const contract = await ContractModel.find({tenant:id, status: "1"})
+      // Buscar los contratos activos asociados al tenantAuthID
+      const contracts = await ContractModel.find({ tenantAuthID: id, status: "1" })
         .populate("propertyId") // Poblar datos de la propiedad
-        .populate("tenant") // Poblar datos del inquilino
-        .exec();
+        .exec(); // No intentamos poblar tenantAuthID porque no es un ObjectId
   
-      if (!contract) {
-        throw createHttpError(404, `Contract with tenant ID ${id} not found`);
+      if (!contracts || contracts.length === 0) {
+        throw createHttpError(404, `No active contracts found for tenant ID ${id}`);
       }
   
-      res.status(200).json(contract);
+      // Recuperar los detalles del inquilino manualmente
+      const tenantDetails = await TenantModel.findOne({ authID: id }).exec();
+  
+      // Agregar detalles del inquilino manualmente a cada contrato
+      const contractsWithTenant = contracts.map(contract => ({
+        ...contract.toObject(),
+        tenant: tenantDetails, // Reemplaza tenantAuthID con la información completa del inquilino
+      }));
+  
+      res.status(200).json(contractsWithTenant);
     } catch (error) {
       next(error);
     }

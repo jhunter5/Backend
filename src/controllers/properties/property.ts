@@ -141,7 +141,6 @@ export const showProperty: RequestHandler = async (req, res, next) => {
       throw createHttpError(404, `Property with ID ${id} not found`);
     }
 
-    console.log(id)
     // Buscar los medios asociados a la propiedad
     const media = await PropertyMediaModel.find({ property: id }).exec();
 
