@@ -149,7 +149,7 @@ export const showProperty: RequestHandler = async (req, res, next) => {
 
     // Buscar el contrato asociado a la propiedad
     const contract = await ContractModel.findOne({ propertyId: propertyObjectId, status: "active" })
-      .populate("tenant", "firstName email authID") 
+      .populate("tenant", "firstName email authID")
       .exec();
 
     // Enviar la propiedad con sus medios y contrato
@@ -199,7 +199,7 @@ export const showPropertiesByUser: RequestHandler = async (req, res, next) => {
           propertyId: propertyObjectId,
           status: "active",
         })
-        .exec();
+          .exec();
 
         return { ...property.toObject(), media, contract };
       })
@@ -221,7 +221,7 @@ export const showAvailableProperties: RequestHandler = async (req, res, next) =>
     const properties = await PropertyModel.aggregate()
       .match({ ...filter })
       .project({ createdAt: 0, updatedAt: 0, __v: 0 }) // Retornar todo menos los timestamps y metadata de mongoose
-      .lookup({ from: "propertymedias", localField: "_id", foreignField: "propertyId", as: "propertyMedia" }) // Se usa el nombre de la colección en la base de datos
+      .lookup({ from: "propertymedias", localField: "_id", foreignField: "property", as: "propertyMedia" }) // Se usa el nombre de la colección en la base de datos
       .addFields({
         // Eliminar campos no deseados de cada propertyMedia
         propertyMedia: {
@@ -277,3 +277,101 @@ export const showAvailablePropertiesWithoutFilters: RequestHandler = async (req,
     next(error);
   }
 }
+
+export const showPropertiesAndCandidatesByLandlordId: RequestHandler = async (req, res, next) => {
+  try {
+    const { landlordId } = req.params;
+    if (!landlordId) {
+      throw createHttpError(400, "Landlord ID is required");
+    }
+
+    /**
+    const properties = await PropertyModel.aggregate()
+      .match({ landlordAuthID: landlordId, isAvailable: true })
+      .project({ createdAt: 0, updatedAt: 0, __v: 0 })
+      .lookup({ from: "propertymedias", localField: "_id", foreignField: "property", as: "propertyMedia" }) // Se usa el nombre de la colección en la base de datos
+      .addFields({
+        // Eliminar campos no deseados de cada propertyMedia
+        propertyMedia: {
+          $map: {
+            input: "$propertyMedia",
+            as: "media",
+            in: {
+              mediaUrl: "$$media.mediaUrl",
+              mediaType: "$$media.mediaType",
+              description: "$$media.description",
+              uploadDate: "$$media.uploadDate",
+            },
+          },
+        },
+      })
+      .sort({ createdAt: -1 })
+      .exec();
+      */
+    const properties = await PropertyModel
+      .aggregate()
+      .match({ landlordAuthID: landlordId, isAvailable: true })
+      // Buscar medios asociados a la propiedad
+      .lookup({
+        from: "propertymedias",
+        let: { propertyId: "$_id" },
+        pipeline: [
+          { $match: { $expr: { $eq: ["$property", "$$propertyId"] } } },
+          { $sort: { uploadDate: -1 } },
+          { $limit: 1 }
+        ],
+        as: "propertyMedia"
+      })
+      // Buscar aplicaciones asociadas a la propiedad
+      .lookup({
+        from: "applications",
+        let: { propertyId: "$_id" },
+        pipeline: [
+          { $match: { $expr: { $eq: ["$property", "$$propertyId"] } } },
+          {
+            $lookup: {
+              from: "tenants",
+              let: { tenantId: "$tenant" },
+              pipeline: [
+                { $match: { $expr: { $eq: ["$_id", "$$tenantId"] } } },
+                {
+                  $project: {
+                    createdAt: 0,
+                    updatedAt: 0,
+                    __v: 0,
+                  }
+                }
+              ],
+              as: "tenantInfo"
+            }
+          },
+          { $unwind: "$tenantInfo" },
+          { $sort: { score: -1 } }
+        ],
+        as: "applications"
+      })
+      // Proyectar solo los campos necesarios
+      .project({
+        _id: 1,
+        media: {
+          $first: "$propertyMedia.mediaUrl"
+        },
+        direccion: "$address",
+        habitaciones: "$rooms",
+        area_propiedad: "$squareMeters",
+        total_postulaciones: { $size: "$applications" },
+        lista_candidatos: {
+          $slice: ["$applications", 3]
+        }
+      })
+      .exec();
+
+    if (!properties || properties.length === 0) {
+      throw createHttpError(404, "No properties found for landlord");
+    }
+
+    res.status(200).json(properties);
+  } catch (error) {
+    next(error);
+  }
+};
