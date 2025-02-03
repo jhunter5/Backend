@@ -11,7 +11,6 @@ import ReviewRouter from "./processes/review";
 import AuthRouter from "./auth/auth";
 import LandlordRouter from "./users/landlord";
 import TenantPreferenceRouter from "./preferences/tenant";
-import ContractRouter from "./contract/contract";
 import AppointmentRouter from "./appointments/appointments";
 
 
