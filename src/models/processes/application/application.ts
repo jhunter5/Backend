@@ -14,6 +14,10 @@ const Application = new Schema({
         ref: 'tenant',
         required: [true, 'El id del inquilino es obligatorio'],
     },
+    personalDescription: {
+        type: String,
+        required: true,
+    },
     // estado - definir cuáles son los códigos de estado para determinar la longitud
     status: {
         type: Number,
