@@ -12,6 +12,7 @@ export const createAppointment: RequestHandler = async (req, res, next) => {
         // Verificar que el arrendador existe
         console.log('LANDLORD ' + landLordAuthID);
         const landLordAuthIDObjectId = new Types.ObjectId(landLordAuthID);
+        const tenantAuthIDObjectId = new Types.ObjectId(tenantAuthID);
         
         const landlord = await LandlordModel.findOne({ authID: landLordAuthIDObjectId });
         if (!landlord) {
@@ -19,7 +20,7 @@ export const createAppointment: RequestHandler = async (req, res, next) => {
         }
     
         // Verificar que el arrendatario existe
-        const tenant = await TenantModel.findById(tenantAuthID);
+        const tenant = await TenantModel.findOne({ authID: tenantAuthIDObjectId });
         if (!tenant) {
         throw createHttpError(404, "El arrendatario no existe");
         }
