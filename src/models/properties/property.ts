@@ -91,7 +91,7 @@ const Property = new Schema({
     },
     rentPrice: {
         type: Number,
-        required: [true, 'El precio de arrendamiento es obligatorio'],
+        required: false,
         min: [0, 'El precio de arrendamiento debe ser un número positivo'],
     },
 },
