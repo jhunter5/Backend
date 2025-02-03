@@ -7,6 +7,7 @@ import {
   showLandlords,
   getActiveTenantsByLandlord,
 } from "../../controllers/users/landlord";
+import { showPropertiesAndCandidatesByLandlordId } from "../../controllers/properties/property";
 
 const LandlordRouter = express.Router();
 
@@ -162,6 +163,40 @@ LandlordRouter.delete("/:id", deleteLandlord);
  *         description: No se encontraron inquilinos activos
  */
 LandlordRouter.get("/:id/tenants/active", getActiveTenantsByLandlord);
+
+/**
+ * @swagger
+ * /api/property/landlord/{landlordId}:
+ *   get:
+ *     tags:
+ *       - Properties
+ *     summary: Obtener todas las propiedades y candidatos de un arrendador
+ *     parameters:
+ *       - in: path
+ *         name: landlordId
+ *         required: true
+ *         schema:
+ *           type: string
+ *     responses:
+ *       '200':
+ *         description: Lista de propiedades y candidatos del arrendador
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 properties:
+ *                   type: array
+ *                   items:
+ *                     $ref: '#/components/schemas/PropertyWithMedia'
+ *                 candidates:
+ *                   type: array
+ *                   items:
+ *                     $ref: '#/components/schemas/Candidate'
+ *       '404':
+ *         description: No se encontraron propiedades o candidatos para el arrendador
+ */
+LandlordRouter.get("/:landlordId/candidates", showPropertiesAndCandidatesByLandlordId);
 
 export default LandlordRouter;
 
