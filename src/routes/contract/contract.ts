@@ -2,11 +2,13 @@ import express from "express";
 import {
   getAllContracts,
   getContractById,
-  getContractsByUser,
   getContractsByProperty,
   getContractsByPropertyAndUser,
   updateContract,
   deleteContract,
+  createContract,
+  getContractsByTenant,
+  getActiveContractsByTenant,
 } from "../../controllers/contract/contract";
 
 const ContractRouter = express.Router();
@@ -64,7 +66,7 @@ ContractRouter.get("/", getAllContracts);
  *         description: Contrato no encontrado
  */
 ContractRouter.get("/:id", getContractById);
-
+ContractRouter.post("/", createContract);
 /**
  * @swagger
  * /api/contracts/user/{userId}:
@@ -90,8 +92,8 @@ ContractRouter.get("/:id", getContractById);
  *       '404':
  *         description: No se encontraron contratos para el usuario
  */
-ContractRouter.get("/user/:userId", getContractsByUser);
-
+ContractRouter.get("/tenant/:id", getContractsByTenant);
+ContractRouter.get("/tenant/active/:id", getActiveContractsByTenant);
 /**
  * @swagger
  * /api/contracts/property/{propertyId}:

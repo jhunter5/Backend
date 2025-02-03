@@ -11,7 +11,9 @@ import ReviewRouter from "./processes/review";
 import AuthRouter from "./auth/auth";
 import LandlordRouter from "./users/landlord";
 import TenantPreferenceRouter from "./preferences/tenant";
+import ContractRouter from "./contract/contract";
 import AppointmentRouter from "./appointments/appointments";
+
 
 
 const router = express.Router();
@@ -22,6 +24,7 @@ router.use("/landlord", LandlordRouter);
 router.use("/property", PropertyRouter);
 router.use("/propertyMedia", PropertyMediaRouter);
 router.use("/application", ApplicationRouter);
+router.use("/contract", ContractRouter);
 router.use("/payment", PaymentRouter);
 router.use("/repair", RepairRouter);
 router.use("/review", ReviewRouter);
