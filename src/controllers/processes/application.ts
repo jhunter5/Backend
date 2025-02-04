@@ -92,24 +92,28 @@ export const showApplication: RequestHandler = async (req, res, next) => {
   const { id } = req.params;
   try {
     // Primero, obtener la aplicación
-    const application = await ApplicationModel.findById(id)
-      .populate("tenant")
-      .exec();
+    const application = await ApplicationModel.findById(id).exec();
     if (!application) {
       throw createHttpError(404, `Application with ID ${id} not found`);
     }
 
+    // Obtener los detalles del inquilino asociado usando tenantAuthID
+    const tenantDetails = application.tenantAuthID ? await TenantModel.findOne({ authID: application.tenantAuthID }).exec() : null;
+
     // Luego, obtener ApplicationReference y ApplicationDocument asociados
-    const references = await ApplicationReferenceModel.find({
-      application: id,
-    }).exec();
-    const documents = await ApplicationMediaModel.find({
-      application: id,
-    }).exec();
+    const references = await ApplicationReferenceModel.find({ application: id }).exec();
+    const documents = await ApplicationMediaModel.find({ application: id }).exec();
+
+    // Preparar la aplicación para la respuesta, reemplazando tenantAuthID por la información completa del inquilino
+    const applicationData = {
+      ...application.toObject(),
+      tenant: tenantDetails, // Reemplazamos tenantAuthID con la información completa del inquilino
+      tenantAuthID: undefined // Opcional: elimina este campo si no quieres que aparezca en la respuesta
+    };
 
     // Enviar todos los datos en la respuesta
     res.status(200).json({
-      application,
+      application: applicationData,
       references,
       documents,
     });
@@ -131,27 +135,30 @@ export const showApplications: RequestHandler = async (req, res, next) => {
   }
 };
 
-export const showApplicationsByProperty: RequestHandler = async (
-  req,
-  res,
-  next
-) => {
+export const showApplicationsByProperty: RequestHandler = async (req, res, next) => {
   const { id } = req.params;
   try {
-    // Obtener aplicaciones con el inquilino poblado
-    const applications = await ApplicationModel.find({ property: id })
-      .populate("tenant")
-      .exec();
+    // Obtener aplicaciones basadas en el id de la propiedad
+    const applications = await ApplicationModel.find({ property: id }).exec();
     if (!applications || applications.length === 0) {
-      throw createHttpError(404, "No applications found");
+      throw createHttpError(404, "No applications found for the property");
     }
 
-    // Extraer datos demográficos de las aplicaciones
-    const demographics = extractDemographics(applications);
+    // Recuperar y añadir los detalles del inquilino manualmente
+    const applicationsWithTenants = await Promise.all(applications.map(async (application) => {
+      const tenantDetails = application.tenantAuthID ? await TenantModel.findOne({ authID: application.tenantAuthID }).exec() : null;
+      return {
+        ...application.toObject(),
+        tenant: tenantDetails, // Añade los detalles del inquilino
+      };
+    }));
+
+    // Extraer datos demográficos de las aplicaciones (función hipotética, implementar según necesidades)
+    const demographics = extractDemographics(applicationsWithTenants);
 
     // Devolver aplicaciones con datos demográficos
     res.status(200).json({
-      applications,
+      applications: applicationsWithTenants,
       demographics,
     });
   } catch (error) {
@@ -238,7 +245,7 @@ export const getApplicationsByTenant: RequestHandler = async (req, res, next) =>
     const yearEnd = new Date(`${year}-12-31T23:59:59.999Z`); // End of the year
 
     const applications = await ApplicationModel.find({
-      tenant: id,
+      tenantAuthID: id,
       createdAt: {
         $gte: yearStart, // Greater than or equal to start of the year
         $lte: yearEnd   // Less than or equal to end of the year

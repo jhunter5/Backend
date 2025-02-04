@@ -9,8 +9,8 @@ const Contract = new Schema(
       required: [true, "El id de la propiedad es obligatorio"],
     },
     // inquilino_id - FK
-    tenant: {
-      type: Schema.Types.ObjectId,
+    tenantAuthID: {
+      type: String,
       ref: "tenant",
       required: [true, "El id del inquilino es obligatorio"],
     },
