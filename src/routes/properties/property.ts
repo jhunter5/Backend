@@ -7,7 +7,8 @@ import {
   showPropertiesByUser,
   updateProperty,
   showAvailableProperties,
-  showAvailablePropertiesWithoutFilters
+  showAvailablePropertiesWithoutFilters,
+  showPropertiesAndCandidatesByLandlordId
 } from "../../controllers/properties/property";
 
 const PropertyRouter = express.Router();
@@ -335,6 +336,7 @@ PropertyRouter.get("/user/:userId", showPropertiesByUser);
 PropertyRouter.patch("/:id", updateProperty);
 PropertyRouter.delete("/:id", deleteProperty);
 PropertyRouter.get("/:id", showProperty);
+PropertyRouter.get("/landlord/:landlordId", showPropertiesAndCandidatesByLandlordId);
 
 export default PropertyRouter;
 /**
