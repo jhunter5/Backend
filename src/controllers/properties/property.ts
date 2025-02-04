@@ -360,6 +360,8 @@ export const showPropertiesAndCandidatesByLandlordId: RequestHandler = async (re
         habitaciones: "$rooms",
         area_propiedad: "$squareMeters",
         total_postulaciones: { $size: "$applications" },
+        precio: "$rentPrice",
+        bathrooms: "$bathrooms",
         lista_candidatos: {
           $slice: ["$applications", 3]
         }
