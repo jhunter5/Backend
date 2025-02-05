@@ -8,15 +8,16 @@ import { TenantModel } from "../../models/users/tenant";
 
 export const createApplication: RequestHandler = async (req, res, next) => {
   try {
-    const { applicationData, applicationMedias, applicationReferences } =
-      req.body;
+    const { applicationData, applicationMedias, applicationReferences } = req.body;
     // Crear la postulación
     const newApplication = await ApplicationModel.create(applicationData);
 
     // Manejar múltiples medios
     const mediaUrls = await Promise.all(
       applicationMedias.map(async (media: { file: any }) => {
-        const mediaUrl = await uploadFileS3(media.file); // Asumiendo que 'file' es un objeto con 'data' y 'name'
+        // Prepend el ID de la aplicación al nombre del archivo
+        media.file.name = `${newApplication._id}-${media.file.name}`;
+        const mediaUrl = await uploadFileS3(media.file);
         return {
           ...media,
           mediaUrl,
@@ -32,9 +33,7 @@ export const createApplication: RequestHandler = async (req, res, next) => {
       application: newApplication._id, // Asociar cada referencia con la postulación creada
     }));
 
-    const newReferences = await ApplicationReferenceModel.insertMany(
-      references
-    );
+    const newReferences = await ApplicationReferenceModel.insertMany(references);
 
     // Enviar respuesta con la postulación y sus detalles asociados
     res.status(201).json({
