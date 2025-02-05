@@ -138,19 +138,32 @@ export const showApplicationsByProperty: RequestHandler = async (req, res, next)
   const { id } = req.params;
   try {
     // Obtener aplicaciones basadas en el id de la propiedad
-    const applications = await ApplicationModel.find({ property: id }).exec();
+    const applications = await ApplicationModel.find({ 
+      property: id, 
+      status: { $ne: 2 } // Excluir status 2
+    }).exec();
+    
+
     if (!applications || applications.length === 0) {
       throw createHttpError(404, "No applications found for the property");
     }
 
+    console.log("------------------");
+    console.log(applications);
+    console.log("------------------");
+
     // Recuperar y añadir los detalles del inquilino manualmente
     const applicationsWithTenants = await Promise.all(applications.map(async (application) => {
+      console.log("------------------ANTES------------------");
+      console.log(application.tenantAuthID)
       const tenantDetails = application.tenantAuthID ? await TenantModel.findOne({ authID: application.tenantAuthID }).exec() : null;
       return {
         ...application.toObject(),
         tenant: tenantDetails, // Añade los detalles del inquilino
       };
     }));
+    console.log("------------------DESPUES------------------");
+    console.log(applicationsWithTenants);
 
     // Extraer datos demográficos de las aplicaciones (función hipotética, implementar según necesidades)
     const demographics = extractDemographics(applicationsWithTenants);

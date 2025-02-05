@@ -331,9 +331,9 @@ export const showPropertiesAndCandidatesByLandlordId: RequestHandler = async (re
           {
             $lookup: {
               from: "tenants",
-              let: { tenantAuthID: "$tenantAuthID" },
+              let: { tenantAuthID: { $toObjectId: "$tenantAuthID" } },
               pipeline: [
-                { $match: { $expr: { $eq: ["$_id", "$$tenantAuthID"] } } },
+                { $match: { $expr: { $eq: ["$_id", "$tenantAuthID"] } } },
                 {
                   $project: {
                     createdAt: 0,
@@ -350,7 +350,7 @@ export const showPropertiesAndCandidatesByLandlordId: RequestHandler = async (re
         ],
         as: "applications"
       })
-      // Proyectar solo los campos necesarios
+      // Proyectar solo los campos necesarioss
       .project({
         _id: 1,
         media: {
