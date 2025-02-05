@@ -22,18 +22,24 @@ export async function uploadFileS3(file: any): Promise<string> {
     throw new Error("File data or file name is missing");
   }
 
+  // Si file.data viene en formato data URI, quita la parte del prefijo
+  let base64Data = file.data;
+  if (base64Data.startsWith("data:")) {
+    base64Data = base64Data.split(",")[1];
+  }
+  const fileBuffer = Buffer.from(base64Data, "base64");
+
   const uploadParams = {
     Bucket: env.AWS_BUCKET_NAME_ID,
-    Key: file.name, // Nombre del archivo en el bucket
-    Body: file.data, // Usamos el buffer directamente
-    ContentType: file.mimetype, // Tipo de contenido para el archivo
+    Key: file.name, 
+    Body: fileBuffer,
+    ContentType: file.mimetype,
   };
 
   try {
     const command = new PutObjectCommand(uploadParams);
     await client.send(command);
 
-    // Generar la URL del archivo
     const bucketUrl = `https://${env.AWS_BUCKET_NAME_ID}.s3.${region}.amazonaws.com/${file.name}`;
     return bucketUrl;
   } catch (error) {
