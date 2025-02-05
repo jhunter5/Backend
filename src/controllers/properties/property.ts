@@ -333,7 +333,7 @@ export const showPropertiesAndCandidatesByLandlordId: RequestHandler = async (re
               from: "tenants",
               let: { tenantAuthID: { $toObjectId: "$tenantAuthID" } },
               pipeline: [
-                { $match: { $expr: { $eq: ["$authID", "$$tenantAuthID"] } } },
+                { $match: { $expr: { $eq: ["$_id", "$$tenantAuthID"] } } },
                 {
                   $project: {
                     createdAt: 0,
