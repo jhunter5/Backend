@@ -2,6 +2,7 @@ import { RequestHandler } from "express";
 import createHttpError from "http-errors";
 import { PropertyModel } from "../../models/properties/property";
 import { PropertyMediaModel } from "../../models/properties/propertyMedia";
+import { TenantModel } from "../../models/users/tenant";
 import { uploadFileS3 } from "../../utils/S3";
 import { ContractModel } from "../../models/contract/contract";
 import { addFiltersToQuery, filterResponseByRegex, getObjectsByIds } from "../../utils/mongoQueryUtils";
@@ -147,12 +148,18 @@ export const showProperty: RequestHandler = async (req, res, next) => {
     // Buscar los medios asociados a la propiedad
     const media = await PropertyMediaModel.find({ property: id }).exec();
 
-    // Buscar el contrato asociado a la propiedad
-    const contract = await ContractModel.findOne({ propertyId: propertyObjectId, status: "active" })
-      .populate("tenantAuthID", "firstName email authID")
-      .exec();
+    const contract = await ContractModel.findOne({
+      propertyId: propertyObjectId,
+      status: "active"
+    }).exec();
 
-    // Enviar la propiedad con sus medios y contrato
+    if (contract) {
+      const tenant = await TenantModel.findOne({ authID: contract.tenantAuthID })
+        .select("firstName email authID")
+        .exec();
+
+      contract.set("tenant", tenant || null, { strict: false });
+    }
     res.status(200).json({ property, media, contract });
   } catch (error) {
     next(error);
