@@ -202,7 +202,7 @@ export const getActiveTenantsByLandlord: RequestHandler = async (req, res, next)
       },
       })
       .unwind("$contracts")
-      .addFields({ "contracts.tenantObjectId": { $toObjectId: "$contracts.tenant" } })
+      .addFields({ "contracts.tenantObjectId": { $toObjectId: "$contracts.tenantAuthID" } }) 
       .lookup({ from: "tenants", localField: "contracts.tenantObjectId", foreignField: "_id", as: "tenants" })
       .unwind("$tenants") // Asegura que cada tenant esté en un documento separado
       .addFields({
