@@ -149,7 +149,7 @@ export const showProperty: RequestHandler = async (req, res, next) => {
 
     // Buscar el contrato asociado a la propiedad
     const contract = await ContractModel.findOne({ propertyId: propertyObjectId, status: "active" })
-      .populate("tenant", "firstName email authID")
+      .populate("tenantAuthID", "firstName email authID")
       .exec();
 
     // Enviar la propiedad con sus medios y contrato
